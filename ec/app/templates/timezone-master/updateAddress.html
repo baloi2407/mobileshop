@@ -1,0 +1,77 @@
+{% extends 'timezone-master/base.html' %}
+{% load static %}
+
+{% block title %}
+    Update Address
+{% endblock title %}
+
+{% block main %}
+<main>
+    <div class="container my-5">
+        <div class="row">
+            
+            <div class="col-md-2 border-right border-danger">
+                <h3>Welcome <span class="text-capitalize">{{request.user}}</span></h3>
+                <div class="row">
+                    <div class="col">
+                        <a href="{% url 'profile' %}" class="btn w-100">Profile</a>
+                    </div>
+                    <div class="col mt-2">
+                        <a href="{% url 'address' %}" class="btn w-100">Address</a>
+                    </div>
+                </div>
+                            
+            </div>
+
+            <div class="col-md-8 offset-md-1">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                        <label for="inputNamel4">Name </label>
+                        {{form.name}} 
+                        </div>
+                        <div class="form-group col-md-6">
+                        <label for="inputMobile4">Mobile</label>
+                        {{form.mobile}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputLocality">Locality</label>
+                        {{form.locality}}
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                        <label for="inputCity">City</label>
+                        {{form.city}}
+                        </div>
+                        <div class="form-group col-md-4">
+                        <label for="inputState" class="d-block">State</label>
+                        {{form.state}}
+                        </div>
+                        <div class="form-group col-md-2">
+                        <label for="inputZip">Zip</label>
+                        {{form.zipcode}}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Submit</button>
+
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p class="alert alert-danger my-3">{{error}}</p>
+                        {% endfor %}                            
+                    {% endif %}
+
+                    {% if messages %}                     
+                        {% for msg in messages %}
+                            <div class="alert alert-{{msg.tags}}" role="alert">{{msg}}</div>
+                        {% endfor %}
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</main>
+{% endblock main %}

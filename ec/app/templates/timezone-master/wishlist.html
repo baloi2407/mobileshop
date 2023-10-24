@@ -1,0 +1,94 @@
+{% extends 'timezone-master/base.html' %}
+{% load static %}
+
+{% block title %}
+    Wishlist
+{% endblock title %}
+    
+{% block main %}
+<main>
+    <!-- Hero Area Start-->
+    <div class="slider-area ">
+        <div class="single-slider slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap text-center">
+                            <h2>Watch Shop</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero Area End-->
+    <!-- Latest Products Start -->
+    <section class="popular-items latest-padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    
+                    <!-- Nav Card -->
+                    <div class="tab-content" id="nav-tabContent">
+                        <!-- card one -->
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                            <div class="row">
+                                
+                                {% for prod in product %}
+                                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                        <div class="single-popular-items mb-50 text-center">
+                                            <div class="popular-img">
+                                                <img src="{{prod.product.product_image.url}}" alt="">
+                                                <div class="img-cap">
+                                                    <span>Add to cart</span>
+                                                </div>
+                                                <div class="favorit-items">
+                                                    <span class="flaticon-heart"></span>
+                                                </div>
+                                            </div>
+                                            <div class="popular-caption">
+                                                <h3><a href="{% url 'product-details' prod.product.id %}">{{prod.product.title}}</a></h3>
+                                                <span class="text-decoration-line-through text-secondary">$ {{prod.product.selling_price}}</span>
+                                                <span>$ {{prod.product.discounted_price}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                {% endfor %}
+                                    
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Nav Card -->
+                </div>
+                <div class="col-md-4">
+                    <div class="blog_right_sidebar">
+                        <aside class="single_sidebar_widget search_widget">
+                            <form action="#">
+                                <div class="form-group">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder='Search Keyword'
+                                            onfocus="this.placeholder = ''"
+                                            onblur="this.placeholder = 'Search Keyword'">
+                                        <div class="input-group-append">
+                                            <button class="btns" type="button"><i class="ti-search"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
+                                    type="submit">Search</button>
+                            </form>
+                        </aside>
+
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Latest Products End -->
+    
+</main>
+{% endblock main %}
+
+

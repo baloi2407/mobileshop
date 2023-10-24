@@ -1,0 +1,54 @@
+{% extends 'timezone-master/base.html' %}
+{% load static %}
+
+{% block title %}
+    Address
+{% endblock title %}
+
+
+{% block main %}
+<main>
+    <div class="container my-5">
+        <div class="row">
+            
+            <div class="col-md-2 border-right border-danger">
+                <h3>Welcome <span class="text-capitalize">{{request.user}}</span></h3>
+                <div class="row">
+                    <div class="col">
+                        <a href="{% url 'profile' %}" class="btn w-100">Profile</a>
+                    </div>
+                    <div class="col mt-2">
+                        <a href="{% url 'address' %}" class="btn w-100">Address</a>
+                    </div>
+                </div>
+                            
+            </div>
+
+            <div class="col-md-8 offset-md-1">
+                 <div class="row">
+                    
+                    {% for ad in add %}
+                        <div class="col-md-6">
+                            <div class="card m-2">
+                                <div class="card-body">
+                                    <h3>Address {{forloop.counter}}</h3>
+                                    <p>Name: {{ad.name}}</p>
+                                    <p>Locality: {{ad.locality}}</p>
+                                    <p>Mobile: {{ad.mobile}}</p>
+                                    <p>City: {{ad.city}}</p>
+                                    <p>State: {{ad.state}}</p>
+                                    <p>Zipcode: {{ad.zipcode}}</p>
+                                    <p class="text-center"><a href="{% url 'updateAddress' pk=ad.id %}" class="btn" type="button">Update</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                        
+                 </div>
+            </div>
+        </div>
+    </div>
+    
+</main>
+{% endblock main %}
+    

@@ -1,0 +1,62 @@
+{% extends 'timezone-master/base.html' %}
+{% load static %}
+
+{% block title %}
+    Login
+{% endblock title %}
+
+
+{% block main %}
+<main>
+    <!-- Hero Area Start-->
+    <div class="slider-area ">
+        <div class="single-slider slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap text-center">
+                            <h2>Login</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero Area End-->
+    <!--================login_part Area =================-->
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-sm-6 offset-sm-3">
+                <h3>Login</h3>
+                <hr>
+                <form action="" method="post" novalidate class="shadow p-5">
+                    {% csrf_token %}
+                    
+                    {% for fm in form %}
+                        {{fm.label_tag}} {{fm}} <small class="text-danger">{{fm.errors|striptags}}</small>
+                        <br>
+                    {% endfor %}
+                    <small><a class="text-danger" href="{% url 'password_reset' %}">Forgot Password</a></small><br>
+                    <input type="submit" value="Login" class="btn btn-primary mt-4"><br>
+                    <div class="text-center text-primary fw-bold">
+                        <small>New User ? <a href="{% url 'registration' %}" class="text-danger">Create an Account</a></small>
+                    </div>
+                    
+                    
+                    {% if form.non_field_errors %}
+                        
+                        {% for error in form.non_field_errors %}
+                            <p class="alert alert-danger my-3">{{error}}</p>
+                        {% endfor %}
+                            
+                    {% endif %}
+                        
+                        
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--================login_part end =================-->
+</main>
+{% endblock main %}
+    

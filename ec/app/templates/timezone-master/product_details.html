@@ -1,0 +1,108 @@
+{% extends 'timezone-master/base.html' %}
+{% load static %}
+
+{% block title %}
+    Product Details 
+{% endblock title %}
+    
+
+
+{% block main %}
+<main>
+    <!-- Hero Area Start-->
+    <div class="slider-area ">
+        <div class="single-slider slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap text-center">
+                            <h2>Watch Shop</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero Area End-->
+    <!--================Single Product Area =================-->
+    <div class="product_image_area">
+        <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+            {% comment %} slider after {% endcomment %}
+            </div>
+            <div class="col-lg-12">
+            <div class="single_product_text text-center">
+                <div class="row">
+                    <div class="col-7">
+                        <h3>{{product.title}}</h3>
+                            <img src="{{product.product_image.url}}" alt="">
+                        <p>
+                            {{product.description}}
+                        </p>
+                    </div>
+                    <div class="col-5">
+                        <div class="card_area">
+                            <div class="product_price mb-5">
+                                <h3>Price:</h3>
+                                <span class="text-danger">Selling Price: ${{product.selling_price}}</span><br>
+                                <span class="text-muted text-decoration-line-through">Discounted Price: ${{product.discounted_price}}</span>
+                            </div>
+                            
+                            <div class="product_count_area">
+                                <p>Quantity</p>
+                                <div class="product_count d-inline-block">
+                                    <span class="product_count_item inumber-decrement"> <i class="ti-minus"></i></span>
+                                    <input class="product_count_item input-number" type="text" value="1" min="0" max="10">
+                                    <span class="product_count_item number-increment"> <i class="ti-plus"></i></span>
+                                </div>
+                                <p>$5</p>
+                            </div>
+                            <div class="row mt-5">
+                                <div class="col-12">
+                                    <form action="/add-to-cart" class="">
+                                        <input type="hidden" name="prod_id" value="{{product.id}}">
+                                        <button type="submit" class="btn btn-primary d-block mb-2 w-100">Add to cart</button>
+                                    </form>
+                                    <a href="" class="btn btn-success d-block">Buy now</a>
+                                    {% if wishlist %}
+                                        <a  pid="{{product.id}}" class="mt-2 minus-wishlist btn shadow px-5 py-2 ms-4"><i class="fas fa-heart fa-lg text-white"></i></a>
+                                    {% else %}
+                                        <a  pid="{{product.id}}" class="mt-2 plus-wishlist btn bg-secondary  shadow px-5 py-2 ms-4"><i class="fas fa-heart fa-lg"></i></a>
+                                      
+                                    {% endif %}
+                                        
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    <!--================End Single Product Area =================-->
+    <!-- subscribe part here -->
+    <section class="subscribe_part section_padding">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="subscribe_part_content">
+                        <h2>Get promotions & updates!</h2>
+                        <p>Seamlessly empower fully researched growth strategies and interoperable internal or “organic” sources credibly innovate granular internal .</p>
+                        <div class="subscribe_form">
+                            <input type="email" placeholder="Enter your mail">
+                            <a href="#" class="btn_1">Subscribe</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- subscribe part end -->
+</main>
+{% endblock main %}
+    

@@ -1,0 +1,105 @@
+{% extends 'timezone-master/base.html' %}
+{% load static %}
+
+{% block title %}
+    Cart
+{% endblock title %}
+
+
+{% block main %}
+    <main>
+        <!-- Hero Area Start-->
+        <div class="slider-area ">
+            <div class="single-slider slider-height2 d-flex align-items-center">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="hero-cap text-center">
+                                <h2>Cart List</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--================Cart Area =================-->
+        <section class="cart_area section_padding">
+        <div class="container">
+            <div class="cart_inner">
+            <div class="table-responsive">
+                <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    {% if cart %}
+                        
+                    {% for item in cart %}
+                        <tr class="product-container">
+                            <td>
+                                <div class="media">
+                                <div class="d-flex">
+                                    <img src="{{item.product.product_image.url}}" alt="" />
+                                </div>
+                                <div class="media-body">
+                                    <p>{{item.product.title}}</p>
+                                </div>
+                                </div>
+                            </td>
+                            <td>
+                                <h5>${{item.product.selling_price}}</h5>
+                            </td>
+                            <td>
+                                <div class="my-3">
+                                    <a class="minus-cart btn" pid="{{item.product.id}}">-</a>
+                                    <span id="quantity">{{item.quantity}}</span>
+                                    <a class="plus-cart btn" pid="{{item.product.id}}">+</a>
+                                </div>
+                            </td>
+                            <td>
+                                <h5>${{value}}</h5>
+                            </td>
+                            <td>
+                                <a class="remove-cart btn" pid="{{item.product.id}}">X</a>
+                            </td>                           
+                        </tr>
+                        
+                    {% endfor %}
+                        
+
+                    <tr class="bottom_button">
+                        <td>
+                            <a class="btn_1" href="{% url 'show-cart' %}">Update Cart</a>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <div class="cupon_text float-right">
+                                <h5 id="totalamount">${{amount}}</h5>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                        <h3>There is nothing in your cart</h3>
+                    {% endif %}
+                        
+                </tbody>
+                </table>
+                <div class="checkout_btn_inner float-right">
+                <a class="btn_1" href="#">Continue Shopping</a>
+                <a class="btn_1 checkout_btn_1" href="{% url 'checkout' %}">Proceed to checkout</a>
+                </div>
+            </div>
+            </div>
+        </section>
+        <!--================End Cart Area =================-->
+    </main>
+{% endblock main %}
+    
