@@ -32,12 +32,12 @@
                             <div class="card m-2">
                                 <div class="card-body">
                                     <h3>Address {{forloop.counter}}</h3>
-                                    <p>Name: {{ad.name}}</p>
-                                    <p>Locality: {{ad.locality}}</p>
-                                    <p>Mobile: {{ad.mobile}}</p>
-                                    <p>City: {{ad.city}}</p>
-                                    <p>State: {{ad.state}}</p>
-                                    <p>Zipcode: {{ad.zipcode}}</p>
+                                    <p>First Name: {{ad.first_name}}</p>
+                                    <p>Last Name: {{ad.last_name}}</p>
+                                    <p>Email: {{ad.email}}</p>
+                                    <p>Address: {{ad.address}}</p>
+                                    <p>Phone: {{ad.phone}}</p>
+                                    
                                     <p class="text-center"><a href="{% url 'updateAddress' pk=ad.id %}" class="btn" type="button">Update</a></p>
                                 </div>
                             </div>

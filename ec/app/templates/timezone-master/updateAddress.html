@@ -24,36 +24,47 @@
             </div>
 
             <div class="col-md-8 offset-md-1">
-                <form action="" method="post">
+                <form action="" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                        <label for="inputNamel4">Name </label>
-                        {{form.name}} 
+                        <label for="inputNamel4">First Name</label>
+                        {{form.first_name}}
                         </div>
                         <div class="form-group col-md-6">
-                        <label for="inputMobile4">Mobile</label>
-                        {{form.mobile}}
+                        <label for="inputMobile4">Last Name</label>
+                        {{form.last_name}}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="inputLocality">Locality</label>
-                        {{form.locality}}
+                        <label for="inputLocality">Email</label>
+                        {{form.email}}
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                        <label for="inputCity">City</label>
-                        {{form.city}}
+                        <label for="inputCity">Address</label>
+                        {{form.address}}
                         </div>
                         <div class="form-group col-md-4">
-                        <label for="inputState" class="d-block">State</label>
-                        {{form.state}}
+                        <label for="inputState" class="d-block">Date of Birth</label>
+                        {{form.date_of_birth}}
                         </div>
                         <div class="form-group col-md-2">
-                        <label for="inputZip">Zip</label>
-                        {{form.zipcode}}
+                        <label for="inputZip">Phone</label>
+                        {{form.phone}}
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="inputLocality">Avatar</label>
+                        <div class="avatar-container">
+                            {% if form.instance.avatar %}
+                                <img src="{{ form.instance.avatar.url }}" alt="Avatar" class="img-fluid">
+                            {% endif %}
+                        </div>
+                        <label for="inputLocality">Change</label>
+                        {{form.avatar}}
+                    </div>
+                    
                     
                     <button type="submit" class="btn btn-primary">Submit</button>
 

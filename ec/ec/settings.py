@@ -63,6 +63,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'app.context_processors.brands',
                 'app.context_processors.cart_items',
                 'app.context_processors.wish_items',
             ],
@@ -78,8 +79,12 @@ WSGI_APPLICATION = 'ec.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mobileshop',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3308',  
     }
 }
 
@@ -133,3 +138,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 RAZOR_KEY_ID = 'rzp_test_hUClvlNvU5ywCd'
 
 RAZOR_KEY_SECRET = '3gkeSiyzpQlzWOpKq9nFLb62'
+
+LIST_PER_PAGE = 10

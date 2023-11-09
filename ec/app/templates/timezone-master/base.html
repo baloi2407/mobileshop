@@ -46,13 +46,13 @@
                             <nav>
                                 <ul id="navigation">
                                     <li><a href="/">Home</a></li>
-                                    <li><a href="#">Products</a>
+                                    <li><a href="{% url 'brand-default' %}">Products</a>
                                         <ul class="submenu">
-                                            <li><a href="{% url 'category' 'AP' %}">Apple</a></li>
-                                            <li><a href="{% url 'category' 'SS' %}">SamSung</a></li>
-                                            <li><a href="{% url 'category' 'OP' %}">Oppo</a></li>
-                                            <li><a href="{% url 'category' 'HW' %}">Huawei</a></li>
-                                            <li><a href="{% url 'category' 'XM' %}">Xiaomi</a></li>
+                                            
+                                            {% for brand in brands %}
+                                            <li><a href="{% url 'brand' brand.id %}">{{brand.brand_name}}</a></li>
+                                            {% endfor %}
+                                                
                                         </ul>
                                     </li>
                                     <li><a href="">Blog</a>
@@ -80,7 +80,7 @@
                                         {% if request.user.is_authenticated %}
                                             <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
                                             <a class="dropdown-item" href="{% url 'password-change' %}">Change Password</a>
-                                            <a class="dropdown-item" href="#">Orders</a>
+                                            <a class="dropdown-item" href="{% url 'orders' %}">Orders</a>
                                             <a class="dropdown-item" href="#">Help</a>
                                             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
                                         {% else %}
@@ -90,12 +90,12 @@
                                                                          
                                       </div>
                                 </li>
+                               
                                 <li><a href="{% url 'show-cart' %}"><span class="flaticon-shopping-cart">{% if totalitem > 0 %}
                                     {{totalitem}}
                                 {% endif %}</span>
-                                
                                    </a> </li>
-                                <li><a href="{% url 'showwishlist' %}"><span class="flaticon-heart">Wishlist{% if wishitems > 0 %}
+                                   <li><a href="{% url 'showwishlist' %}"><span class="flaticon-heart">Wishlist{% if wishitems > 0 %}
                                     {{wishitems}}
                                 {% endif %}</span>
                                 

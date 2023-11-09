@@ -8,7 +8,6 @@
 
 {% block main %}
 <main>
-    
     <!--? slider Area Start -->
     <div class="slider-area">
         <div class="slider-active">
@@ -71,39 +70,21 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-new-pro mb-30 text-center">
-                        <div class="product-img">
-                            <img src="{% static 'timezone-master/assets/img/gallery/new_product4.jpg' %}" alt="">
-                        </div>
-                        <div class="product-caption">
-                            <h3><a href="">Thermo Ball Etip Gloves</a></h3>
-                            <span>$ 45,743</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-new-pro mb-30 text-center">
-                        <div class="product-img">
-                            <img src="{% static 'timezone-master/assets/img/gallery/new_product5.jpg' %}" alt="">
-                        </div>
-                        <div class="product-caption">
-                            <h3><a href="">Thermo Ball Etip Gloves</a></h3>
-                            <span>$ 45,743</span>
+                
+                {% for prod in new_products %}
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                        <div class="single-new-pro mb-30 text-center">
+                            <div class="product-img">
+                                <img src="{{prod.image.url}}" alt="">
+                            </div>
+                            <div class="product-caption">
+                                <h3><a href="{% url 'product-details' prod.id %}">{{prod.pro_name}}</a></h3>
+                                <span>$ {{prod.price}}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-new-pro mb-30 text-center">
-                        <div class="product-img">
-                            <img src="{% static 'timezone-master/assets/img/gallery/new_product6.jpg' %}" alt="">
-                        </div>
-                        <div class="product-caption">
-                            <h3><a href="">Thermo Ball Etip Gloves</a></h3>
-                            <span>$ 45,743</span>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
+                    
             </div>
         </div>
     </section>
@@ -155,46 +136,40 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-popular-items mb-50 text-center">
-                        <div class="popular-img">
-                            <img src="{% static 'timezone-master/assets/img/gallery/popular8.jpg' %}" alt="">
-                            <div class="img-cap">
-                                <span>Add to cart</span>
+                
+                {% for prod in popular_products %}
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                        <div class="single-popular-items mb-50 text-center">
+                            <div class="popular-img">
+                                <img src="{{prod.image.url}}" alt="">
+                                <div class="img-cap">
+                                    <form action="/add-to-cart" class="">
+                                        <input type="hidden" name="prod_id" value="{{prod.id}}">
+                                        <button type="submit" class="btn btn-primary d-block w-100">Add to cart</button>
+                                    </form>
+                                </div>
+                                <div class="favorit-items">
+                                    {% if wishlist %}
+                                        <a pid="{{prod.id}}" class="minus-wishlist"><span class="fas fa-heart text-danger"></span></a>
+                                    {% else %}
+                                    <a pid="{{prod.id}}" class="plus-wishlist"><span class="fas fa-heart text-secondary"></span></a>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="favorit-items">
-                                <span class="flaticon-heart"></span>
+                            <div class="popular-caption">
+                                <h3><a href="{% url 'product-details' prod.id %}">{{prod.pro_name}}</a></h3>
+                                <span>$ {{prod.price}}</span>
                             </div>
-                        </div>
-                        <div class="popular-caption">
-                            <h3><a href="">Thermo Ball Etip Gloves</a></h3>
-                            <span>$ 45,743</span>
                         </div>
                     </div>
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-popular-items mb-50 text-center">
-                        <div class="popular-img">
-                            <img src="{% static 'timezone-master/assets/img/gallery/popular7.jpeg' %}" alt="">
-                            <div class="img-cap">
-                                <span>Add to cart</span>
-                            </div>
-                            <div class "favorit-items">
-                                <span class="flaticon-heart"></span>
-                            </div>
-                        </div>
-                        <div class="popular-caption">
-                            <h3><a href="">Thermo Ball Etip Gloves</a></h3>
-                            <span>$ 45,743</span>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
+                    
                 <!-- Repeat the above two code blocks for the other products -->
             </div>
             <!-- Button -->
             <div class="row justify-content-center">
                 <div class="room-btn pt-70">
-                    <a href="" class="btn view-btn1">View More Products</a>
+                    <a href="{% url 'brand-default' %}" class="btn view-btn1">View More Products</a>
                 </div>
             </div>
         </div>

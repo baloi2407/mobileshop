@@ -46,28 +46,28 @@
                             <td>
                                 <div class="media">
                                 <div class="d-flex">
-                                    <img src="{{item.product.product_image.url}}" alt="" />
+                                    <img src="{{item.prod.image.url}}" alt="" />
                                 </div>
                                 <div class="media-body">
-                                    <p>{{item.product.title}}</p>
+                                    <p>{{item.prod.pro_name}}</p>
                                 </div>
                                 </div>
                             </td>
                             <td>
-                                <h5>${{item.product.selling_price}}</h5>
+                                <h5>${{item.prod.price}}</h5>
                             </td>
                             <td>
                                 <div class="my-3">
-                                    <a class="minus-cart btn" pid="{{item.product.id}}">-</a>
+                                    <a class="minus-cart btn" pid="{{item.prod.id}}">-</a>
                                     <span id="quantity">{{item.quantity}}</span>
-                                    <a class="plus-cart btn" pid="{{item.product.id}}">+</a>
+                                    <a class="plus-cart btn" pid="{{item.prod.id}}">+</a>
                                 </div>
                             </td>
                             <td>
                                 <h5>${{value}}</h5>
                             </td>
                             <td>
-                                <a class="remove-cart btn" pid="{{item.product.id}}">X</a>
+                                <a class="remove-cart btn" pid="{{item.prod.id}}">X</a>
                             </td>                           
                         </tr>
                         

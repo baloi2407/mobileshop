@@ -4,16 +4,17 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static  # Import thêm static
 from django.contrib.auth.views import LoginView, PasswordChangeView,PasswordChangeDoneView, LogoutView, PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
-from . forms import LoginForm
-from . forms import MyPasswordResetForm,MyPasswordChangeForm,MySetPasswordForm
+from . forms import LoginForm,MyPasswordChangeForm,MyPasswordResetForm,MySetPasswordForm
+
 
 urlpatterns = [
     path('', views.home),
     path("about",views.about,name="about"),
     path("contact",views.contact,name="contact"),
-    path("category/<slug:val>",views.CatgoryView.as_view(),name="category"),
-    path("category-title/<val>",views.CatgoryTitle.as_view(),name="category-title"),
+    path("brand/<int:val>/",views.BrandView.as_view(),name="brand"),
+    path("brand/",views.BrandView.as_view(),name="brand-default"),
     path("product-details/<int:pk>",views.ProductDetail.as_view(),name="product-details"),
+
     path("profile/",views.ProfileView.as_view(),name="profile"),
     path("address/",views.address,name="address"),
     path("updateAddress/<int:pk>",views.updateAddress.as_view(),name="updateAddress"),
@@ -23,22 +24,29 @@ urlpatterns = [
     path('pluscart/', views.update_cart, {'action': 'plus'}),
     path('minuscart/', views.update_cart, {'action': 'minus'}),
     path('removecart/', views.remove_from_cart),
+
+    
     path('checkout/',views.checkout.as_view(),name='checkout'),
     path('paymentdone/',views.payment_done,name='paymentdone'),
     path('orders/',views.orders,name='orders'),
+
     path('pluswishlist/', views.plus_wishlist),
     path('minuswishlist/', views.minus_wishlist),
     path('wishlist/', views.show_wishlist,name='showwishlist'),
 
     path('search/',views.search,name='search'),
+    path('advanced_search/', views.advanced_search, name='advanced_search'),
+
 
 
     # Login authentication
     path("registration/",views.CustomerRegistrationView.as_view(),name="registration"),
     path("accounts/login/",LoginView.as_view(template_name='timezone-master/login.html',authentication_form = LoginForm),name="login"),
-    
+
     path('password-change/', PasswordChangeView.as_view(template_name='timezone-master/passwordChange.html', form_class=MyPasswordChangeForm, success_url='/password-change-done'), name='password-change'),
+
     path('password-change-done/', PasswordChangeDoneView.as_view(template_name='timezone-master/passwordChangeDone.html'), name='password-change-done'),
+
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
 
     path('password-reset/',PasswordResetView.as_view(template_name='timezone-master/password_reset.html',form_class=MyPasswordResetForm), name='password_reset'),

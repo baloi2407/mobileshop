@@ -35,18 +35,18 @@
             <div class="single_product_text text-center">
                 <div class="row">
                     <div class="col-7">
-                        <h3>{{product.title}}</h3>
-                            <img src="{{product.product_image.url}}" alt="">
+                        <h3>{{product.pro_name}}</h3>
+                            <img src="{{product.image.url}}" alt="">
                         <p>
-                            {{product.description}}
+                            {{product.summary}}
                         </p>
                     </div>
                     <div class="col-5">
                         <div class="card_area">
                             <div class="product_price mb-5">
                                 <h3>Price:</h3>
-                                <span class="text-danger">Selling Price: ${{product.selling_price}}</span><br>
-                                <span class="text-muted text-decoration-line-through">Discounted Price: ${{product.discounted_price}}</span>
+                                <span class="text-danger">Selling Price: ${{product.price}}</span><br>
+                                <span class="text-muted text-decoration-line-through">Discounted Price: ${{product.discount}}</span>
                             </div>
                             
                             <div class="product_count_area">

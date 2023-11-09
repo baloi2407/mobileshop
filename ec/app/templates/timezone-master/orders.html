@@ -28,10 +28,10 @@
                         {% for op in order_placed %}
                         <div class="card m-2">
                             <div class="card-body d-flex align-items-center border-bottom border-danger">                                
-                                <img src="{{op.product.product_image.url}}" alt="" style="width:15%" class="m-1 border border-danger">
+                                <img src="{{op.prod.image.url}}" alt="" style="width:15%" class="m-1 border border-danger">
                                 <div class="order-details d-flex flex-column justify-content-between flex-grow-1">
                                     <div class="order-info">
-                                        <p>Title: {{op.product.title}}</p>
+                                        <p>Title: {{op.prod.pro_name}}</p>
                                         <p>Quantity: {{op.quantity}}</p>
                                         <p>Price: {{op.total_cost}}</p>
                                     </div>

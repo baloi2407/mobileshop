@@ -21,13 +21,13 @@
         {% for item in cart_items %}
           <div class="card mb-2">
             <div class="card-body">
-              <h5>Product: {{item.product.title}}</h5>
+              <h5>Product: {{item.prod.pro_name}}</h5>
               <p>Quantity: {{item.quantity}}</p>
-              <p class="fw-bold">Price: {{item.product.discounted_price}}</p>
+              <p class="fw-bold">Price: {{item.prod.price}}$</p>
             </div>
           </div>
         {% endfor %}
-        <p class="fw-bold">Total Cost = {{amount}}</p>
+        <p class="fw-bold">Total Cost = {{amount}}$</p>
         <small>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Hic, doloribus dolorum! Hic, consequuntur doloribus temporibus dolorem quos accusamus ullam provident mollitia, enim officia debitis blanditiis fuga, inventore animi maxime fugiat?</small>  
       </div>
       <div class="col-sm-4 offset-sm-1">
@@ -39,9 +39,10 @@
           {% for ad in add %}
             <div class="card">
               <div class="card-body">
-                <h5>{{ad.name}}</h5>
-                <p>Mobile: {{ad.mobile}}</p>
-                <p>{{ad.locality}} {{ad.city}} {{ad.state}} - {{ad.zipcode}}</p>
+                <h5>{{ad.first_name}}</h5>
+                <p>Email: {{ad.email}}</p>
+                <p>Mobile: {{ad.phone}}</p>
+                <p>{{ad.address}} </p>
               </div>
             </div>
             <div class="form-check mt-2 mb-5">

@@ -62,27 +62,54 @@
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                             <div class="row">
                                 
-                                {% for prod in product %}
+                                {% for prod in products %}
                                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                         <div class="single-popular-items mb-50 text-center">
                                             <div class="popular-img">
-                                                <img src="{{prod.product_image.url}}" alt="">
+                                                <img src="{{prod.image.url}}" alt="">
                                                 <div class="img-cap">
-                                                    <span>Add to cart</span>
+                                                    <form action="/add-to-cart" class="">
+                                                        <input type="hidden" name="prod_id" value="{{prod.id}}">
+                                                        <button type="submit" class="btn btn-primary d-block w-100">Add to cart</button>
+                                                    </form>
                                                 </div>
                                                 <div class="favorit-items">
-                                                    <span class="flaticon-heart"></span>
+                                                    
+                                                    {% if wishlist %}
+                                                        <a pid="{{prod.id}}" class="minus-wishlist"><span class="fas fa-heart text-danger"></span></a>
+                                                    {% else %}
+                                                    <a pid="{{prod.id}}" class="plus-wishlist"><span class="fas fa-heart text-secondary"></span></a>
+                                                    {% endif %}
+                                                        
+                                                    
                                                 </div>
                                             </div>
                                             <div class="popular-caption">
-                                                <h3><a href="{% url 'product-details' prod.id %}">{{prod.title}}</a></h3>
-                                                <span class="text-decoration-line-through text-secondary">$ {{prod.selling_price}}</span>
-                                                <span>$ {{prod.discounted_price}}</span>
+                                                <h3><a href="{% url 'product-details' prod.id %}">{{prod.pro_name}}</a></h3>
+                                                <span class="text-decoration-line-through text-secondary">$ {{prod.price}}</span>
+                                                <span>$ {{prod.discount}}</span>
                                             </div>
                                         </div>
                                     </div>
                                     
                                 {% endfor %}
+                                <div class="pagination">
+                                    <span class="step-links">
+                                        {% if page > 1 %}
+                                            <a href="?page=1">&laquo; first</a>
+                                            <a href="?page={{ page|add:"-1" }}">previous</a>
+                                        {% endif %}
+                                
+                                        <span class="current-page">
+                                            Page {{ page }} of {{ total_pages }}.
+                                        </span>
+                                
+                                        {% if page < total_pages %}
+                                            <a href="?page={{ page|add:"1" }}">next</a>
+                                            <a href="?page={{ total_pages }}">last &raquo;</a>
+                                        {% endif %}
+                                    </span>
+                                </div>
                                     
                             </div>
                         </div>
@@ -92,31 +119,35 @@
                 <div class="col-md-4">
                     <div class="blog_right_sidebar">
                         <aside class="single_sidebar_widget search_widget">
-                            <form action="#">
+                            <form method="GET" action="/advanced_search">
                                 <div class="form-group">
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder='Search Keyword'
-                                            onfocus="this.placeholder = ''"
-                                            onblur="this.placeholder = 'Search Keyword'">
-                                        <div class="input-group-append">
-                                            <button class="btns" type="button"><i class="ti-search"></i></button>
-                                        </div>
-                                    </div>
+                                    <label for="pro_name">Pro name</label>
+                                    <input type="text" class="form-control" name="pro_name" id="pro_name" placeholder="Enter the product name">
                                 </div>
-                                <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
-                                    type="submit">Search</button>
+                                <div class="form-group">
+                                    <label for="brand">Brand</label>
+                                    <input type="text" class="form-control" name="brand" id="brand" placeholder="Enter the brand">
+                                </div>
+                                <div class="form-group">
+                                    <label for="min_price">Min price</label>
+                                    <input type="text" class="form-control" name="min_price" id="min_price" placeholder="Enter min price">
+                                </div>
+                                <div class="form-group">
+                                    <label for="max_price">Max price</label>
+                                    <input type="text" class="form-control" name="max_price" id="max_price" placeholder="Enter max price">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Search</button>
                             </form>
+                            
                         </aside>
-
                         <aside class="single_sidebar_widget post_category_widget">
                             <h4 class="widget_title">Category</h4>
                             <ul class="list cat-list">
                                 
-                                {% for val in  title%}
+                                {% for brand in  brands%}
                                     <li>
-                                        <a href="{% url 'category-title' val.title %}" class="d-flex">
-                                            <p>{{val.title}}</p>
-                                            <p>(37)</p>
+                                        <a href="{% url 'brand' brand.id %}" class="d-flex">
+                                            <p>{{brand.brand_name}}</p>
                                         </a>
                                     </li>                               
                                 {% endfor %}
@@ -191,57 +222,6 @@
                                     <a href="#">illustration</a>
                                 </li>
                             </ul>
-                        </aside>
-
-
-                        <aside class="single_sidebar_widget instagram_feeds">
-                            <h4 class="widget_title">Instagram Feeds</h4>
-                            <ul class="instagram_row flex-wrap">
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_5.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_6.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_7.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_8.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_9.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_10.png" alt="">
-                                    </a>
-                                </li>
-                            </ul>
-                        </aside>
-
-
-                        <aside class="single_sidebar_widget newsletter_widget">
-                            <h4 class="widget_title">Newsletter</h4>
-
-                            <form action="#">
-                                <div class="form-group">
-                                    <input type="email" class="form-control" onfocus="this.placeholder = ''"
-                                        onblur="this.placeholder = 'Enter email'" placeholder='Enter email' required>
-                                </div>
-                                <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
-                                    type="submit">Subscribe</button>
-                            </form>
                         </aside>
                     </div>
                 </div>

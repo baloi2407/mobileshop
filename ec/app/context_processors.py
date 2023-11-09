@@ -1,4 +1,11 @@
-from . models import Cart,Wishlist
+from . models import Brand,Product, Cart, Wishlist
+
+
+def brands(request):
+    brands = Brand.objects.all()
+
+    return {'brands': brands}
+
 def cart_items(request):
     totalitem = 0
     if request.user.is_authenticated:
