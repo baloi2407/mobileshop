@@ -30,10 +30,7 @@ class BaseForm(forms.ModelForm):
         validate_field(brand_name, "Brand name")
         return brand_name
 
-    def clean_pro_name(self):
-        pro_name = self.cleaned_data.get('pro_name')
-        validate_field(pro_name, "Pro name")
-        return pro_name
+    
     
 
 class BrandForm(BaseForm):

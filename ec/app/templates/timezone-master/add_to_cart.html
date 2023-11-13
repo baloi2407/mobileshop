@@ -33,7 +33,6 @@
                     <th scope="col">Product</th>
                     <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
-                    <th scope="col">Total</th>
                     <th scope="col">Remove</th>
                     </tr>
                 </thead>
@@ -62,9 +61,6 @@
                                     <span id="quantity">{{item.quantity}}</span>
                                     <a class="plus-cart btn" pid="{{item.prod.id}}">+</a>
                                 </div>
-                            </td>
-                            <td>
-                                <h5>${{value}}</h5>
                             </td>
                             <td>
                                 <a class="remove-cart btn" pid="{{item.prod.id}}">X</a>

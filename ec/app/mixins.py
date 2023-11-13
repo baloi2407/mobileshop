@@ -1,5 +1,10 @@
 from django.utils.html import format_html
-
+import pandas as pd
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.styles import NamedStyle
+from openpyxl.utils.dataframe import dataframe_to_rows
+import openpyxl
 class Mixins:
     
     
@@ -37,4 +42,69 @@ class Mixins:
             obj.save()
 
     make_block.short_description = "Set selected brands as Block"
+
+    def export_to_excel(modeladmin, request, queryset):
+        # Lấy tên model để sử dụng làm tên file Excel
+        model_name = modeladmin.model._meta.model_name
+
+        # Chuyển đổi queryset thành DataFrame
+        df = pd.DataFrame(list(queryset.values()))
+
+        # Kiểm tra kiểu dữ liệu của cột 'created_at' và 'updated_at'
+        print(df.dtypes)
+
+        # Chuyển đổi cột 'created_at' và 'updated_at' sang dạng không có thông tin về múi giờ
+        df['created_at'] = pd.to_datetime(df['created_at']).dt.tz_localize(None)
+        df['updated_at'] = pd.to_datetime(df['updated_at']).dt.tz_localize(None)
+
+        # Tạo response và thiết lập các thông số của file Excel
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename={model_name}_list.xlsx'
+
+        # Tạo một workbook cho DataFrame
+        workbook = Workbook()
+
+        # Thêm một sheet vào workbook
+        sheet = workbook.active
+        sheet.title = "Sheet1"
+
+        # Ghi DataFrame vào sheet
+        for row_data in dataframe_to_rows(df, index=False, header=True):
+            sheet.append(row_data)
+
+        # Tạo một style cho cột 'created_at' và 'updated_at'
+        date_style = NamedStyle(name='datetime', number_format='YYYY-MM-DD HH:MM:SS')
+        
+
+        # Tìm cột 'created_at' và 'updated_at' dựa trên tiêu đề
+        created_at_col = None
+        updated_at_col = None
+
+        for col_num in range(1, sheet.max_column + 1):
+            header_value = sheet.cell(row=1, column=col_num).value
+            if header_value == 'created_at':
+                created_at_col = col_num
+            elif header_value == 'updated_at':
+                updated_at_col = col_num
+
+        # Áp dụng style chỉ nếu cả hai cột đều tồn tại
+        if created_at_col is not None and updated_at_col is not None:
+            for col_num in (created_at_col, updated_at_col):
+                for row_num in range(2, sheet.max_row + 1):
+                    cell = sheet.cell(row=row_num, column=col_num)
+                    cell.style = date_style
+        else:
+            print("Không tìm thấy cột 'created_at' hoặc 'updated_at'. Không thể áp dụng style.")
+
+       
+                
+
+        # Ghi workbook vào response
+        workbook.save(response)
+
+        return response
+
+    export_to_excel.short_description = "Export selected Rows to Excel"
+
+
     

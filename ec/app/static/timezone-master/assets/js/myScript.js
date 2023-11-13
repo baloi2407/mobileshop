@@ -12,6 +12,7 @@ function updateCart(action, element) {
         success: function(data) {
             console.log("data = ", data);
             eml.innerText = data.quantity;
+             
             document.getElementById("totalamount").innerText = data.amount;
         }
     });

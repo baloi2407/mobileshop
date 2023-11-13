@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
+    'import_export',
+    'mathfilters',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +68,7 @@ TEMPLATES = [
                 'app.context_processors.brands',
                 'app.context_processors.cart_items',
                 'app.context_processors.wish_items',
+                'django.template.context_processors.request',
             ],
         },
     },

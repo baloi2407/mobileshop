@@ -12,6 +12,8 @@ from django.utils.decorators import method_decorator
 
 from . forms import CustomerRegistrationForm, CustomerProfileForm
 from . pagination import paginate_data
+import uuid 
+from . generate import generate_order_id, generate_numeric_order_id
 
 # Create your views here.
 #@login_required
@@ -213,8 +215,9 @@ class checkout(View):
         client = razorpay.Client(auth=(settings.RAZOR_KEY_ID,settings.RAZOR_KEY_SECRET))
         data = {"amount":razoramount,"currency":"INR","receipt":"order_rcptid_12"}
         payment_response = client.order.create(data=data)
-        #print(payment_response)
+        print(payment_response)
         order_id = payment_response['id']
+        print(order_id)
         order_status = payment_response['status']
         if order_status == 'created':
             payment = Payment(

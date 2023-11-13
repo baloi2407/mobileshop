@@ -17,13 +17,13 @@
       <div class="col-sm-6">
         <h4>Order Summary</h4>
         <hr>
-        
+        {% load mathfilters %}
         {% for item in cart_items %}
           <div class="card mb-2">
             <div class="card-body">
               <h5>Product: {{item.prod.pro_name}}</h5>
               <p>Quantity: {{item.quantity}}</p>
-              <p class="fw-bold">Price: {{item.prod.price}}$</p>
+              <p class="fw-bold">Sub Total: {{ item.quantity|mul:item.prod.price }}$</p>
             </div>
           </div>
         {% endfor %}
