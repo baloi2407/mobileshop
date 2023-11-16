@@ -27,6 +27,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8">
+                    {% if messages %}
+                        <div class="alert alert-dismissible">
+                            {% for message in messages %}
+                                <div class="alert-{{ message.tags }}" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <div class="row product-btn justify-content-between mb-40">
                         <div class="properties__button">
                             <!--Nav Button  -->
@@ -93,24 +102,30 @@
                                     </div>
                                     
                                 {% endfor %}
-                                <div class="pagination">
-                                    <span class="step-links">
-                                        {% if page > 1 %}
-                                            <a href="?page=1">&laquo; first</a>
-                                            <a href="?page={{ page|add:"-1" }}">previous</a>
-                                        {% endif %}
                                 
-                                        <span class="current-page">
-                                            Page {{ page }} of {{ total_pages }}.
-                                        </span>
-                                
-                                        {% if page < total_pages %}
-                                            <a href="?page={{ page|add:"1" }}">next</a>
-                                            <a href="?page={{ total_pages }}">last &raquo;</a>
+                            </div>
+                            <!-- Hiển thị phân trang -->
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if products.has_previous %}
+                                        <a class="text-danger" href="?page=1">&laquo; first</a>
+                                        <a class="text-danger" href="?page={{ products.previous_page_number }}">previous</a>
+                                    {% endif %}
+
+                                    <!-- Hiển thị số trang -->
+                                    {% for i in products.paginator.page_range %}
+                                        {% if products.number == i %}
+                                            <span class="current">{{ i }}</span>
+                                        {% else %}
+                                            <a class="text-danger" href="?page={{ i }}">{{ i }}</a>
                                         {% endif %}
-                                    </span>
-                                </div>
-                                    
+                                    {% endfor %}
+
+                                    {% if products.has_next %}
+                                        <a class="text-danger" href="?page={{ products.next_page_number }}">next</a>
+                                        <a class="text-danger" href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+                                    {% endif %}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -155,45 +170,7 @@
                             </ul>
                         </aside>
 
-                        <aside class="single_sidebar_widget popular_post_widget">
-                            <h3 class="widget_title">Recent Post</h3>
-                            <div class="media post_item">
-                                <img src="assets/img/post/post_1.png" alt="post">
-                                <div class="media-body">
-                                    <a href="single-blog.html">
-                                        <h3>From life was you fish...</h3>
-                                    </a>
-                                    <p>January 12, 2019</p>
-                                </div>
-                            </div>
-                            <div class="media post_item">
-                                <img src="assets/img/post/post_2.png" alt="post">
-                                <div class="media-body">
-                                    <a href="single-blog.html">
-                                        <h3>The Amazing Hubble</h3>
-                                    </a>
-                                    <p>02 Hours ago</p>
-                                </div>
-                            </div>
-                            <div class="media post_item">
-                                <img src="assets/img/post/post_3.png" alt="post">
-                                <div class="media-body">
-                                    <a href="single-blog.html">
-                                        <h3>Astronomy Or Astrology</h3>
-                                    </a>
-                                    <p>03 Hours ago</p>
-                                </div>
-                            </div>
-                            <div class="media post_item">
-                                <img src="assets/img/post/post_4.png" alt="post">
-                                <div class="media-body">
-                                    <a href="single-blog.html">
-                                        <h3>Asteroids telescope</h3>
-                                    </a>
-                                    <p>01 Hours ago</p>
-                                </div>
-                            </div>
-                        </aside>
+                        
                         <aside class="single_sidebar_widget tag_cloud_widget">
                             <h4 class="widget_title">Tag Clouds</h4>
                             <ul class="list">

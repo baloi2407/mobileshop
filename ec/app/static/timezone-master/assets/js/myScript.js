@@ -14,6 +14,7 @@ function updateCart(action, element) {
             eml.innerText = data.quantity;
              
             document.getElementById("totalamount").innerText = data.amount;
+            document.getElementById("message").innerText = data.message;
         }
     });
 }

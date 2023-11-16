@@ -25,6 +25,13 @@
         <!--================Cart Area =================-->
         <section class="cart_area section_padding">
         <div class="container">
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
             <div class="cart_inner">
             <div class="table-responsive">
                 <table class="table">
@@ -49,6 +56,8 @@
                                 </div>
                                 <div class="media-body">
                                     <p>{{item.prod.pro_name}}</p>
+                                    <p id="message" class="text-danger">1{{message}}</p>
+
                                 </div>
                                 </div>
                             </td>
@@ -88,10 +97,48 @@
                         
                 </tbody>
                 </table>
-                <div class="checkout_btn_inner float-right">
-                <a class="btn_1" href="#">Continue Shopping</a>
-                <a class="btn_1 checkout_btn_1" href="{% url 'checkout' %}">Proceed to checkout</a>
+                <!-- Hiển thị phân trang -->
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if cart.has_previous %}
+                            <a class="text-danger" href="?page=1">&laquo; first</a>
+                            <a class="text-danger" href="?page={{ cart.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <!-- Hiển thị số trang giới hạn -->
+                        {% if page_obj.paginator.num_pages > 10 %}
+                            {% if page_obj.number > 5 %}
+                                <span>...</span>
+                            {% endif %}
+                            {% for i in page_obj.paginator.page_range %}
+                                {% if i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+                                    {% if page_obj.number == i %}
+                                        <span class="current">{{ i }}</span>
+                                    {% else %}
+                                        <a href="?page={{ i }}">{{ i }}</a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_obj.paginator.num_pages > page_obj.number|add:'5' %}
+                                <span>...</span>
+                            {% endif %}
+                        {% else %}
+                            {% for i in page_obj.paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <span class="current">{{ i }}</span>
+                                {% else %}
+                                    <a href="?page={{ i }}">{{ i }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if cart.has_next %}
+                            <a class="text-danger" href="?page={{ cart.next_page_number }}">next</a>
+                            <a class="text-danger" href="?page={{ cart.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </span>
                 </div>
+
             </div>
             </div>
         </section>

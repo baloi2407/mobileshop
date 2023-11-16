@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from django.views import View
 from . models import Product, Brand, Customer, Cart, Payment, OrderPlaced, Wishlist
 import razorpay
 from django.contrib import messages
 from django.db.models import Q, Count
-
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -14,7 +13,7 @@ from . forms import CustomerRegistrationForm, CustomerProfileForm
 from . pagination import paginate_data
 import uuid 
 from . generate import generate_order_id, generate_numeric_order_id
-
+from django.core.paginator import Paginator
 # Create your views here.
 #@login_required
 def home(request):
@@ -39,7 +38,10 @@ class BrandView(View):
         else:
             queryset = Product.objects.all().order_by('-updated_at')
 
-        products, total_pages = paginate_data(queryset, int(page))
+        
+        
+        # Lấy các sản phẩm cho trang hiện tại
+        products = paginate_data(queryset, request.GET.get('page'))
 
         return render(request, "timezone-master/category.html", locals())
     
@@ -117,28 +119,41 @@ def add_to_cart(request):
     if request.method == 'GET':
         user = request.user
         product_id = request.GET.get('prod_id')
-        
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
+
+        product = Product.objects.get(id=product_id)
+
+        if product.quantity > 0:
+            cart_item, created = Cart.objects.get_or_create(user=user, prod=product)
+
+            if not created:
+                cart_item.quantity += 1
+                cart_item.save()
+
+            # Thông báo thành công và chuyển hướng
+            messages.success(request, 'Đã thêm sản phẩm vào giỏ hàng!')
             return redirect('/cart')
-
-        cart_item, created = Cart.objects.get_or_create(user=user, prod=product)
-
-        if not created:
-            cart_item.quantity += 1
-            cart_item.save()
-
-        return redirect('/cart')
+        else:
+            # Thông báo hết hàng và giữ ở trang hiện tại
+            messages.warning(request, 'Sản phẩm đã hết hàng.')
+    
+    # Giữ ở trang hiện tại
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+        
 
 def show_cart(request):
     user = request.user
     cart = Cart.objects.filter(user=user)
+    
+    
+    # Lấy các sản phẩm cho trang hiện tại
+    page_obj = paginate_data(cart, request.GET.get('page'))
+    
     amount = 0
-    for p in cart:
+    for p in page_obj.object_list:
         value = p.quantity * p.prod.price
-        amount = amount + value
-    return render(request,"timezone-master/add_to_cart.html",locals())
+        amount += value
+    
+    return render(request, "timezone-master/add_to_cart.html", {'cart': page_obj, 'amount': amount})
 
 def update_cart(request, action):
     if request.method == 'GET':
@@ -148,8 +163,11 @@ def update_cart(request, action):
             if prod_id:
                 try:
                     c = Cart.objects.get(Q(prod=prod_id) & Q(user=request.user))
+                    # Số lượng sản phẩm trong kho
+                    available_quantity = c.prod.quantity
                     if action == "plus":
                         c.quantity += 1
+                        
                     elif action == "minus":
                         if c.quantity > 1:
                             c.quantity -= 1
@@ -209,7 +227,7 @@ class checkout(View):
         cart_items = Cart.objects.filter(user=user)
         amount = 0
         for p in cart_items:
-            value = p.quantity * p.prod.price
+            value = p.quantity * p.prod.price * p.prod.discount if p.prod.discount > 0 else p.quantity * p.prod.price
             amount += value
         razoramount = int(amount)
         client = razorpay.Client(auth=(settings.RAZOR_KEY_ID,settings.RAZOR_KEY_SECRET))
@@ -245,6 +263,9 @@ def payment_done(request):
     #To save order details
     cart = Cart.objects.filter(user=user)
     for c in cart:
+        prod = Product.objects.get(prod=c.prod)
+        prod.quantity -= c.quantity
+        prod.save()
         OrderPlaced(user=user,customer=customer,prod=c.prod,quantity=c.quantity,payment=payment).save()
         c.delete()
     return redirect("orders")

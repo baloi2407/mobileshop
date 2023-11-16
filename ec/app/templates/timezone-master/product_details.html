@@ -29,7 +29,15 @@
         <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-12">
-            {% comment %} slider after {% endcomment %}
+                {% if messages %}
+                    <div class="alert alert-dismissible">
+                        {% for message in messages %}
+                            <div class="alert-{{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             <div class="col-lg-12">
             <div class="single_product_text text-center">
@@ -71,6 +79,7 @@
                                         <a  pid="{{product.id}}" class="mt-2 plus-wishlist btn bg-secondary  shadow px-5 py-2 ms-4"><i class="fas fa-heart fa-lg"></i></a>
                                       
                                     {% endif %}
+                                    
                                         
                                 </div>
                             </div>
@@ -78,6 +87,7 @@
                         </div>
                         
                     </div>
+
                 </div>
             </div>
             </div>

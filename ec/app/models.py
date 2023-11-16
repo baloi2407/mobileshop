@@ -22,7 +22,8 @@ class Brand(models.Model):
     description = models.TextField(blank=True,null=True)
     status = models.CharField(max_length=50, choices=STATUS, default='Active')
     created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)    
+    updated_at = models.DateTimeField(auto_now=True)   
+    
 
     def __str__(self):
         return self.brand_name
@@ -85,7 +86,7 @@ class Customer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.email
+        return self.first_name
 
     class Meta:
         db_table = 'customers'
@@ -119,6 +120,9 @@ class Payment(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f"{self.user.username} - Payment ID: {self.id} - Created At: {self.created_at}"
+    
     class Meta:
         db_table = 'payment'
         verbose_name = "Payment"
@@ -152,8 +156,8 @@ class OrderPlaced(models.Model):
         verbose_name_plural = "Order Placed"
 
 class Wishlist(models.Model):
-    prod = models.ForeignKey(Product,on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
+    prod = models.ForeignKey(Product,on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS, default='Active')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
