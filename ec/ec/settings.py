@@ -68,6 +68,7 @@ TEMPLATES = [
                 'app.context_processors.brands',
                 'app.context_processors.cart_items',
                 'app.context_processors.wish_items',
+                'app.context_processors.avatar',
                 'django.template.context_processors.request',
             ],
         },
@@ -87,7 +88,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
-        'PORT': '3308',  
+        'PORT': '3307',  
     }
 }
 

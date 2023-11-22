@@ -69,12 +69,14 @@
                         <div class="header-right">
                             <ul>
                                 <li>                                  
-                                    <form action="/search" class="d-flex" role="search">
+                                    <form action="/search" method="get" class="d-flex" role="search">
                                         <input type="search" class="form-control " placeholder="Search" name="search" aria-label="Search">
                                         <button class="text-white bg-danger btn-outline-dark" type="submit">Search</button>
                                     </form>                                 
                                 </li>
-                                <li> <a href="" class=" dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="flaticon-user"></span></a>
+
+                                <li> 
+                                    <a class=" dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{avatar}}" class="rounded-circle img-fluid" style="width: 30px; height: 30px;"></a>
                                     <div class="dropdown-menu">
                                         
                                         {% if request.user.is_authenticated %}
@@ -90,6 +92,9 @@
                                                                          
                                       </div>
                                 </li>
+                                
+                                
+
                                
                                 <li><a href="{% url 'show-cart' %}"><span class="flaticon-shopping-cart">{% if totalitem > 0 %}
                                     {{totalitem}}

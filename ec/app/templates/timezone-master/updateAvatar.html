@@ -1,0 +1,63 @@
+{% extends 'timezone-master/base.html' %}
+{% load static %}
+
+{% block title %}
+    Update Avatar
+{% endblock title %}
+
+{% block main %}
+<main>
+    <div class="container my-5">
+        <div class="row">
+            
+            <div class="col-md-2 border-right border-danger">
+                <h3>Welcome <span class="text-capitalize">{{request.user}}</span></h3>
+                <div class="row">
+                    <div class="col">
+                        <a href="{% url 'profile' %}" class="btn w-100">Profile</a>
+                    </div>
+                    <div class="col mt-2">
+                        <a href="{% url 'avatar' %}" class="btn w-100">Avatar</a>
+                    </div>
+                </div>
+                            
+            </div>
+
+            <div class="col-md-8 offset-md-1">
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="inputAvatar">Avatar</label>
+                        <div class="avatar-container">
+                            {% if form.instance.avatar %}
+                                <img src="{{ form.instance.avatar.url }}" alt="Avatar" class="img-fluid">
+                            {% else %}
+                                <p>No avatar available</p>
+                            {% endif %}
+                        </div>
+                        <label for="inputAvatar">Change</label>
+                        {{form.avatar}}
+                    </div>
+                    
+                    
+                    <button type="submit" class="btn btn-primary">Submit</button>
+
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p class="alert alert-danger my-3">{{error}}</p>
+                        {% endfor %}                            
+                    {% endif %}
+
+                    {% if messages %}                     
+                        {% for msg in messages %}
+                            <div class="alert alert-{{msg.tags}}" role="alert">{{msg}}</div>
+                        {% endfor %}
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</main>
+{% endblock main %}

@@ -6,7 +6,10 @@ from openpyxl.styles import NamedStyle
 from openpyxl.utils.dataframe import dataframe_to_rows
 import openpyxl
 class Mixins:
-    
+    def is_used_display(self, obj):
+        return 'Use' if obj.is_used == 1 else 'Not'
+
+    is_used_display.short_description = 'Is Used'
     
     def display_image(self, obj):
         if obj.image:

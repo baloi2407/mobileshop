@@ -1,7 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, PasswordChangeForm, SetPasswordForm,PasswordResetForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm, UsernameField, PasswordChangeForm, SetPasswordForm,PasswordResetForm
 from django.contrib.auth.models import User
-from .models import Product,Brand, Customer, Category, News, Cart, OrderPlaced, Payment, Wishlist
+from .models import Product,Brand, Customer, Category, News, Cart, OrderPlaced, Payment, Wishlist,Avatar
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 import re
@@ -206,7 +206,13 @@ class WishlistForm(BaseForm):
         self.clean_selected_field('prod')
         return cleaned_data
     
-
+class AvatarAdminForm(forms.ModelForm):
+    class Meta:
+        model = Avatar
+        fields = '__all__'
+        widgets = {
+            'is_used': forms.Select(choices=Avatar.IS_USED_CHOICES),
+        }
     
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}))
@@ -248,6 +254,13 @@ class CustomerProfileForm(forms.ModelForm):
             'avatar': forms.FileInput(attrs={'class': 'form-control'}),
 
         }
-    
-    
-   
+
+class AvatarProfileForm(forms.ModelForm):
+    class Meta:
+        model = Avatar
+        fields = ['image']
+        widgets={
+            'avatar': forms.FileInput(attrs={'class': 'form-control'}),
+
+        }
+ 

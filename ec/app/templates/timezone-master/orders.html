@@ -33,7 +33,8 @@
                                     <div class="order-info">
                                         <p>Title: {{op.prod.pro_name}}</p>
                                         <p>Quantity: {{op.quantity}}</p>
-                                        <p>Price: {{op.total_cost}}</p>
+                                        <p>Price: {{op.amount}}</p>
+                                        <p>Date: {{op.updated_at}}</p>
                                     </div>
                                     <div class="order-status ml-auto">
                                         <p>Order status: </p>
@@ -75,7 +76,30 @@
                             
                         {% endfor %}
                             
-                     </div>                        
+                     </div>   
+                     <!-- Hiển thị phân trang -->
+                     <div class="pagination">
+                        <span class="step-links">
+                            {% if order_placed.has_previous %}
+                                <a class="text-danger" href="?page=1">&laquo; first</a>
+                                <a class="text-danger" href="?page={{ order_placed.previous_page_number }}">previous</a>
+                            {% endif %}
+
+                            <!-- Hiển thị số trang -->
+                            {% for i in order_placed.paginator.page_range %}
+                                {% if order_placed.number == i %}
+                                    <span class="current">{{ i }}</span>
+                                {% else %}
+                                    <a class="text-danger" href="?page={{ i }}">{{ i }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if order_placed.has_next %}
+                                <a class="text-danger" href="?page={{ order_placed.next_page_number }}">next</a>
+                                <a class="text-danger" href="?page={{ order_placed.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>                     
                  </div>
             </div>
         </div>

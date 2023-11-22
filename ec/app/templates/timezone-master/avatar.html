@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Address
+    Avatar
 {% endblock title %}
 
 
@@ -28,32 +28,32 @@
             </div>
 
             <div class="col-md-8 offset-md-1">
-                 <div class="row">
-                    
-                    {% for ad in add %}
+                
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="card m-2">
                                 <div class="card-body">
-                                    <h3>Address {{forloop.counter}}</h3>
-                                    <p>First Name: {{ad.first_name}}</p>
-                                    <p>Last Name: {{ad.last_name}}</p>
-                                    <p>Email: {{ad.email}}</p>
-                                    <p>Address: {{ad.address}}</p>
-                                    <p>Phone: {{ad.phone}}</p>
-                                    
-                                    <a class="text-center"><a href="{% url 'updateAddress' pk=ad.id %}" class="btn" type="button">Update</a></a>
-                                    <a class="text-center"><a href="{% url 'deleteAddress' pk=ad.id %}" class="btn" type="button">Delete</a></a>
+                                    {% if ava.image %}
+                                        <div class="avatar-container">
+                                            <img src="{{ ava.image.url }}" alt="Avatar" class="img-fluid">
+                                        </div>
+                                    {% else %}
+                                        <p>No avatar available</p>
+                                    {% endif %}
+                                    <a href="{% url 'updateAvatar' pk=ava.id %}" class="btn" type="button">Update</a>
+                                    <a href="{% url 'deleteAvatar' pk=ava.id %}" class="btn" type="button">Delete</a>
                                 </div>
                             </div>
-                        </div>
+                        </div>                    
+                    </div>                
+            </div>
+            
+
+                {% if messages %}                     
+                    {% for msg in messages %}
+                        <div class="alert alert-{{msg.tags}}" role="alert">{{msg}}</div>
                     {% endfor %}
-                        
-                 </div>
-                 {% if messages %}                     
-                     {% for msg in messages %}
-                         <div class="alert alert-{{msg.tags}}" role="alert">{{msg}}</div>
-                     {% endfor %}
-                 {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Category : {{val|title}}
+    Search 
 {% endblock title %}
     
 {% block main %}
@@ -27,16 +27,6 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8">
-                    <!-- Out of Stock Notification  -->
-                    {% if messages %}
-                        <div class="alert alert-dismissible">
-                            {% for message in messages %}
-                                <div class="alert-{{ message.tags }}" role="alert">
-                                    {{ message }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                     <div class="row product-btn justify-content-between mb-40">
                         <div class="properties__button">
                             <!--Nav Button  -->
@@ -70,7 +60,7 @@
                     <div class="tab-content" id="nav-tabContent">
                         <!-- card one -->
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                            <div class="row">
+                            <div class="row" id="search-results">
                                 
                                 {% for prod in products %}
                                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
@@ -94,14 +84,14 @@
                                     </div>
                                     
                                 {% endfor %}
-                                
+                                    
                             </div>
                             <!-- Hiển thị phân trang -->
                             <div class="pagination">
                                 <span class="step-links">
                                     {% if products.has_previous %}
-                                        <a class="text-danger" href="?page=1">&laquo; first</a>
-                                        <a class="text-danger" href="?page={{ products.previous_page_number }}">previous</a>
+                                        <a class="text-danger" href="/advanced_search/?pro_name={{ request.GET.pro_name }}&brand={{ request.GET.brand }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&page=1">&laquo; first</a>
+                                        <a class="text-danger" href="/advanced_search/?pro_name={{ request.GET.pro_name }}&brand={{ request.GET.brand }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&page={{ products.previous_page_number }}">previous</a>
                                     {% endif %}
 
                                     <!-- Hiển thị số trang -->
@@ -109,13 +99,13 @@
                                         {% if products.number == i %}
                                             <span class="current">{{ i }}</span>
                                         {% else %}
-                                            <a class="text-danger" href="?page={{ i }}">{{ i }}</a>
+                                            <a class="text-danger" href="/advanced_search/?pro_name={{ request.GET.pro_name }}&brand={{ request.GET.brand }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&page={{ i }}">{{ i }}</a>
                                         {% endif %}
                                     {% endfor %}
 
                                     {% if products.has_next %}
-                                        <a class="text-danger" href="?page={{ products.next_page_number }}">next</a>
-                                        <a class="text-danger" href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+                                        <a class="text-danger" href="/advanced_search/?pro_name={{ request.GET.pro_name }}&brand={{ request.GET.brand }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&page={{ products.next_page_number }}">next</a>
+                                        <a class="text-danger" href="/advanced_search/?pro_name={{ request.GET.pro_name }}&brand={{ request.GET.brand }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&page={{ products.paginator.num_pages }}">last &raquo;</a>
                                     {% endif %}
                                 </span>
                             </div>
@@ -143,10 +133,11 @@
                                     <label for="max_price">Max price</label>
                                     <input type="text" class="form-control" name="max_price" id="max_price" placeholder="Enter max price">
                                 </div>
-                                <button type="submit" class="btn btn-primary search-btn">Search</button>
+                                <button type="submit" class="btn btn-primary">Search</button>
                             </form>
                             
                         </aside>
+
                         <aside class="single_sidebar_widget post_category_widget">
                             <h4 class="widget_title">Category</h4>
                             <ul class="list cat-list">
@@ -162,7 +153,6 @@
                             </ul>
                         </aside>
 
-                       
                     </div>
                 </div>
             </div>
@@ -202,5 +192,4 @@
     <!-- Shop Method End-->
 </main>
 {% endblock main %}
-
 

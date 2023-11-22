@@ -60,7 +60,7 @@
                     <div class="tab-content" id="nav-tabContent">
                         <!-- card one -->
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                            <div class="row">
+                            <div class="row" id="search-results">
                                 
                                 {% for prod in products %}
                                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
@@ -68,11 +68,12 @@
                                             <div class="popular-img">
                                                 <img src="{{prod.image.url}}" alt="">
                                                 <div class="img-cap">
-                                                    <span>Add to cart</span>
+                                                    <form action="/add-to-cart" class="">
+                                                        <input type="hidden" name="prod_id" value="{{prod.id}}">
+                                                        <button type="submit" class="btn btn-primary d-block w-100">Add to cart</button>
+                                                    </form>
                                                 </div>
-                                                <div class="favorit-items">
-                                                    <span class="flaticon-heart"></span>
-                                                </div>
+                                               
                                             </div>
                                             <div class="popular-caption">
                                                 <h3><a href="{% url 'product-details' prod.id %}">{{prod.pro_name}}</a></h3>
@@ -85,6 +86,29 @@
                                 {% endfor %}
                                     
                             </div>
+                            <!-- Hiển thị phân trang -->
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if products.has_previous %}
+                                        <a class="text-danger" href="/search/?search={{ request.GET.search }}&page=1">&laquo; first</a>
+                                        <a class="text-danger" href="/search/?search={{ request.GET.search }}&page={{ products.previous_page_number }}">previous</a>
+                                    {% endif %}
+
+                                    <!-- Hiển thị số trang -->
+                                    {% for i in products.paginator.page_range %}
+                                        {% if products.number == i %}
+                                            <span class="current">{{ i }}</span>
+                                        {% else %}
+                                            <a class="text-danger" href="/search/?search={{ request.GET.search }}&page={{ i }}">{{ i }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if products.has_next %}
+                                        <a class="text-danger" href="/search/?search={{ request.GET.search }}&page={{ products.next_page_number }}">next</a>
+                                        <a class="text-danger" href="/search/?search={{ request.GET.search }}&page={{ products.paginator.num_pages }}">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <!-- End Nav Card -->
@@ -92,7 +116,7 @@
                 <div class="col-md-4">
                     <div class="blog_right_sidebar">
                         <aside class="single_sidebar_widget search_widget">
-                            <form method="GET" action="/advanced_search">
+                            <form method="GET" action="/advanced_search" id="search-form">
                                 <div class="form-group">
                                     <label for="pro_name">Pro name</label>
                                     <input type="text" class="form-control" name="pro_name" id="pro_name" placeholder="Enter the product name">
@@ -118,11 +142,10 @@
                             <h4 class="widget_title">Category</h4>
                             <ul class="list cat-list">
                                 
-                                {% for val in  title%}
+                                {% for brand in  brands%}
                                     <li>
-                                        <a href="{% url 'category-title' val.title %}" class="d-flex">
-                                            <p>{{val.title}}</p>
-                                            <p>(37)</p>
+                                        <a href="{% url 'brand' brand.id %}" class="d-flex">
+                                            <p>{{brand.brand_name}}</p>
                                         </a>
                                     </li>                               
                                 {% endfor %}
@@ -130,125 +153,6 @@
                             </ul>
                         </aside>
 
-                        <aside class="single_sidebar_widget popular_post_widget">
-                            <h3 class="widget_title">Recent Post</h3>
-                            <div class="media post_item">
-                                <img src="assets/img/post/post_1.png" alt="post">
-                                <div class="media-body">
-                                    <a href="single-blog.html">
-                                        <h3>From life was you fish...</h3>
-                                    </a>
-                                    <p>January 12, 2019</p>
-                                </div>
-                            </div>
-                            <div class="media post_item">
-                                <img src="assets/img/post/post_2.png" alt="post">
-                                <div class="media-body">
-                                    <a href="single-blog.html">
-                                        <h3>The Amazing Hubble</h3>
-                                    </a>
-                                    <p>02 Hours ago</p>
-                                </div>
-                            </div>
-                            <div class="media post_item">
-                                <img src="assets/img/post/post_3.png" alt="post">
-                                <div class="media-body">
-                                    <a href="single-blog.html">
-                                        <h3>Astronomy Or Astrology</h3>
-                                    </a>
-                                    <p>03 Hours ago</p>
-                                </div>
-                            </div>
-                            <div class="media post_item">
-                                <img src="assets/img/post/post_4.png" alt="post">
-                                <div class="media-body">
-                                    <a href="single-blog.html">
-                                        <h3>Asteroids telescope</h3>
-                                    </a>
-                                    <p>01 Hours ago</p>
-                                </div>
-                            </div>
-                        </aside>
-                        <aside class="single_sidebar_widget tag_cloud_widget">
-                            <h4 class="widget_title">Tag Clouds</h4>
-                            <ul class="list">
-                                <li>
-                                    <a href="#">project</a>
-                                </li>
-                                <li>
-                                    <a href="#">love</a>
-                                </li>
-                                <li>
-                                    <a href="#">technology</a>
-                                </li>
-                                <li>
-                                    <a href="#">travel</a>
-                                </li>
-                                <li>
-                                    <a href="#">restaurant</a>
-                                </li>
-                                <li>
-                                    <a href="#">life style</a>
-                                </li>
-                                <li>
-                                    <a href="#">design</a>
-                                </li>
-                                <li>
-                                    <a href="#">illustration</a>
-                                </li>
-                            </ul>
-                        </aside>
-
-
-                        <aside class="single_sidebar_widget instagram_feeds">
-                            <h4 class="widget_title">Instagram Feeds</h4>
-                            <ul class="instagram_row flex-wrap">
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_5.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_6.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_7.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_8.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_9.png" alt="">
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img class="img-fluid" src="assets/img/post/post_10.png" alt="">
-                                    </a>
-                                </li>
-                            </ul>
-                        </aside>
-
-
-                        <aside class="single_sidebar_widget newsletter_widget">
-                            <h4 class="widget_title">Newsletter</h4>
-
-                            <form action="#">
-                                <div class="form-group">
-                                    <input type="email" class="form-control" onfocus="this.placeholder = ''"
-                                        onblur="this.placeholder = 'Enter email'" placeholder='Enter email' required>
-                                </div>
-                                <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
-                                    type="submit">Subscribe</button>
-                            </form>
-                        </aside>
                     </div>
                 </div>
             </div>

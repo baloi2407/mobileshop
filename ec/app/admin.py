@@ -1,11 +1,12 @@
 from django.contrib import admin
-from . models import Product, Brand, Customer, Cart, Payment, OrderPlaced, Wishlist,Category,News
+from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 from django.urls import reverse
-from django.contrib.auth.models import Group
-from .forms import ProductForm,BrandForm,CustomerForm,CategoryForm,NewsForm, CartForm, WishlistForm, OrderPlacedForm, PaymentForm
-from .mixins import Mixins
 from django.conf import settings
+from django.contrib.auth.models import Group
+from . models import Product, Brand, Customer, Cart, Payment, OrderPlaced, Wishlist,Category,News, Avatar
+from .forms import ProductForm,BrandForm,CustomerForm,CategoryForm,NewsForm, CartForm, WishlistForm, OrderPlacedForm, PaymentForm,AvatarAdminForm
+from .mixins import Mixins
 
 from .resources import ProductResource
 from import_export.admin import ImportExportModelAdmin
@@ -85,5 +86,11 @@ class NewsModelAdmin(BaseAdmin):
     search_fields = ['id','news_name','cat__cat_name']
     form = NewsForm
 
+@admin.register(Avatar)
+class AvatarModelAdmin(BaseAdmin):
+    list_display = ['id','display_image','user_id','is_used_display','status','updated_at']
+    form = AvatarAdminForm
+
+    
 #admin.site.unregister(Group)
 

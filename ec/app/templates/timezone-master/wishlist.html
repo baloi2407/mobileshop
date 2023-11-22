@@ -34,7 +34,7 @@
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                             <div class="row">
                                 
-                                {% for prod in product %}
+                                {% for prod in products %}
                                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                         <div class="single-popular-items mb-50 text-center">
                                             <div class="popular-img">
@@ -56,6 +56,29 @@
                                     
                                 {% endfor %}
                                     
+                            </div>
+                            <!-- Hiển thị phân trang -->
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if products.has_previous %}
+                                        <a class="text-danger" href="?page=1">&laquo; first</a>
+                                        <a class="text-danger" href="?page={{ products.previous_page_number }}">previous</a>
+                                    {% endif %}
+
+                                    <!-- Hiển thị số trang -->
+                                    {% for i in products.paginator.page_range %}
+                                        {% if products.number == i %}
+                                            <span class="current">{{ i }}</span>
+                                        {% else %}
+                                            <a class="text-danger" href="?page={{ i }}">{{ i }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if products.has_next %}
+                                        <a class="text-danger" href="?page={{ products.next_page_number }}">next</a>
+                                        <a class="text-danger" href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+                                    {% endif %}
+                                </span>
                             </div>
                         </div>
                     </div>

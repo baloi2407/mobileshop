@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from . uploads import upload_to_brand,upload_to_product,upload_to_category,upload_to_news,upload_to_avatar
+from django.core.exceptions import ValidationError
 from import_export import resources
 
 # Create your models here.
@@ -142,6 +143,7 @@ class OrderPlaced(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     prod = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    amount = models.FloatField(blank=True, null=True)
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE, default="")
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending')
     created_at = models.DateTimeField(default=timezone.now)
@@ -212,3 +214,32 @@ class News(models.Model):
         db_table = 'news'
         verbose_name = "News"
         verbose_name_plural = "News"
+
+class Avatar(models.Model):
+    IS_USED_CHOICES = (
+        ('0','Not'),
+        ('1','Use'),
+    )
+    image = models.ImageField(upload_to=upload_to_avatar, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,blank=True, null=True)
+    is_used = models.IntegerField(default=0)
+    status = models.CharField(max_length=50, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        db_table = 'avatars'
+        verbose_name = "Avatar"
+        verbose_name_plural = "Avatars"
+
+    def save(self, *args, **kwargs):
+        # Kiểm tra xem người dùng đã có avatar hay chưa
+        existing_avatar = Avatar.objects.filter(user=self.user).exists()
+        if existing_avatar and not self.pk:
+            raise ValidationError('This user already has an avatar.')  # Nếu người dùng đã có avatar, không cho phép tạo mới
+
+        super(Avatar, self).save(*args, **kwargs)
+
