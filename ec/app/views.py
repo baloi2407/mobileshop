@@ -1,35 +1,62 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse,HttpResponse
-from django.views import View
-from . models import Product, Brand, Customer, Cart, Payment, OrderPlaced, Wishlist, Avatar
-import razorpay
-from django.contrib import messages
-from django.db.models import Q, Count,F
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404  # Import các hàm render, redirect, get_object_or_404 từ Django để xử lý phản hồi và truy cập dữ liệu
+
+from django.http import JsonResponse  # Import để tạo phản hồi dạng JSON
+
+from django.views import View  # Import để sử dụng lớp View của Django để tạo các view (chế độ xem)
+
+from . models import (  # Import các mô hình từ module models trong cùng thư mục để sử dụng trong ứng dụng
+    Product,
+    Brand,
+    Customer,
+    Cart,
+    Payment,
+    OrderPlaced,
+    Wishlist,
+    Avatar,
+)
+
+import razorpay  # Import để sử dụng gói razorpay cho thanh toán
+
+from django.contrib import messages  # Import để hiển thị thông báo hoặc tin nhắn trong Django
+
+from django.db.models import Q, Count  # Import để thực hiện các truy vấn phức tạp với Q objects và tính toán số lượng với Count
+
+from django.conf import settings  # Import cài đặt settings của Django để sử dụng các cấu hình
+
+from django.contrib.auth.decorators import login_required # Import để bảo vệ view cần đăng nhập để truy cập
 from django.utils.decorators import method_decorator
-from urllib.parse import urlencode
-from . forms import CustomerRegistrationForm, CustomerProfileForm,AvatarProfileForm
-from . pagination import paginate_data
-import uuid 
-from . generate import generate_order_id, generate_numeric_order_id
-from django.core.paginator import Paginator
-# Create your views here.
-#@login_required
+
+from urllib.parse import urlencode  # Import để mã hóa các thông tin URL
+
+from . forms import (  # Import các biểu mẫu từ module forms trong cùng thư mục để sử dụng trong ứng dụng
+    CustomerRegistrationForm,
+    CustomerProfileForm,
+    AvatarProfileForm,
+)
+
+from . pagination import paginate_data  # Import hàm paginate_data từ module pagination để phân trang dữ liệu
+
+# Tạo các views
+
+#hàm xử lý view trang home
 def home(request):
-    brands = Brand.objects.all()
+    brands = Brand.objects.all() # lấy tất cả các brand
     new_products = Product.objects.all().order_by('-updated_at')[:3]
     #print(new_products)
     popular_products = Product.objects.annotate(order_count=Count('orderplaced__prod_id')).order_by('-order_count')[:3]
-    return render(request,'timezone-master/home.html',{'new_products': new_products,'popular_products': popular_products})
+    most_popular_product = Product.objects.annotate(order_count=Count('orderplaced__prod_id')).order_by('-order_count').first()
 
+    return render(request,'timezone-master/home.html',locals())
+
+#hàm xử lý view trang about
 def about(request):
     return render(request,'timezone-master/about.html')
 
+#hàm xử lý view trang contact
 def contact(request):
     return render(request,'timezone-master/contact.html')
 
-#@method_decorator(login_required,name='dispatch')
+#hàm xử lý view trang brand(Hiển thị danh sách sản phẩm theo nhãn)
 class BrandView(View):
     def get(self, request, val=None, page=1):
         # If there is no val parameter, query all products in descending order
@@ -41,14 +68,16 @@ class BrandView(View):
         # Lấy các sản phẩm cho trang hiện tại
         products = paginate_data(queryset, request.GET.get('page'))
 
-        return render(request, "timezone-master/category.html", locals())
-    
+        return render(request, "timezone-master/brand.html", locals())
+
+#Xử lý view trang chi tiết sản phẩm
 class ProductDetail(View):
     def get(self,request,pk):
         product = Product.objects.get(pk=pk)
         wishlist = Wishlist.objects.filter(Q(prod=product) & Q(user=request.user))
         return render(request,"timezone-master/product_details.html",locals())
-
+    
+#Xử lý view trang đăng ký tài khoản
 class CustomerRegistrationView(View):
     def get(self,request):
         form = CustomerRegistrationForm
@@ -62,6 +91,8 @@ class CustomerRegistrationView(View):
             messages.warning(request,"Invalid Input Data!")
         return render(request,"timezone-master/customer_registration.html",locals())
     
+@method_decorator(login_required,name='dispatch')
+#Xử lý view trang thông tin địa chỉ 
 class ProfileView(View):
     def get(self,request):
         form = CustomerProfileForm()
@@ -72,7 +103,6 @@ class ProfileView(View):
             user = request.user
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
-            email = form.cleaned_data['email']
             address = form.cleaned_data['address']
             date_of_birth = form.cleaned_data['date_of_birth']
             phone = form.cleaned_data['phone']
@@ -82,35 +112,34 @@ class ProfileView(View):
                 'user': user,
                 'first_name': first_name,
                 'last_name': last_name,
-                'email': email,
                 'address': address,
                 'date_of_birth': date_of_birth,
                 'phone': phone
             }
 
-            uploaded_avatar_file = request.FILES.get('avatar')
-
-            if uploaded_avatar_file:
-                customer_data['avatar'] = uploaded_avatar_file
-
             reg = Customer(**customer_data)
             reg.save()
-
-            if uploaded_avatar_file:
-                messages.success(request, "Congratulations! Profile Saved Successfully")
-            else:
-                messages.success(request, "Profile Saved Successfully (without avatar)")
+     
+            messages.success(request, "Congratulations! Profile Saved Successfully")
 
             return redirect('/address')
 
         else:
             messages.warning(request, "Invalid Input Data!")
             return render(request, "timezone-master/profile.html", {'form': form})
-    
+        
+@login_required    
+#Xử lý view trang địa chỉ
 def address(request):
-    add = Customer.objects.filter(user_id=request.user)
+    try:
+        add = Customer.objects.get(user=request.user)
+    except Customer.DoesNotExist:
+        add = None
+
     return render(request,"timezone-master/address.html",locals())
 
+@login_required
+#Xử lý view trang ảnh đại diện
 def avatar(request):
     try:
         ava = Avatar.objects.get(user=request.user)
@@ -119,6 +148,8 @@ def avatar(request):
         ava = Avatar.objects.create(user=request.user)
     return render(request,"timezone-master/avatar.html",locals())
 
+@method_decorator(login_required,name='dispatch')
+#Xử lý view trang cập nhật thông tin địa chỉ
 class updateAddress(View):
     def get(self,request,pk):
         add = Customer.objects.get(pk=pk)
@@ -131,13 +162,10 @@ class updateAddress(View):
             add = Customer.objects.get(pk=pk)
             add.first_name = form.cleaned_data['first_name']
             add.last_name = form.cleaned_data['last_name']
-            add.email = form.cleaned_data['email']
             add.address = form.cleaned_data['address']
             add.date_of_birth = form.cleaned_data['date_of_birth']
             add.phone = form.cleaned_data['phone']
-            if 'avatar' in request.FILES:
-                avatar = request.FILES['avatar']
-                add.avatar.save(avatar.name, avatar)
+            
             add.save()
             messages.success(request,"Congratulations! Profile Update Successfully")
         else:
@@ -145,26 +173,8 @@ class updateAddress(View):
 
         return redirect(request.META.get('HTTP_REFERER', '/'))
     
-class updateAvatar(View):
-    def get(self,request,pk):
-        ava = Avatar.objects.get(pk=pk)
-        form = AvatarProfileForm(instance=ava)
-        return render(request,"timezone-master/updateAvatar.html",locals())
-    
-    def post(self,request,pk):
-        form = AvatarProfileForm(request.POST)
-        if form.is_valid():
-            ava = Avatar.objects.get(pk=pk)
-            
-            if 'avatar' in request.FILES:
-                avatar = request.FILES['avatar']
-                ava.avatar.save(avatar.name, avatar)
-            ava.save()
-            messages.success(request,"Congratulations! Profile Update Successfully")
-        else:
-            messages.warning(request,"Invalid Input Data!")
-
-        return redirect(request.META.get('HTTP_REFERER', '/'))
+@login_required
+#Xử lý view xóa thông tin địa chỉ
 def deleteAddress(request,pk):
     customer = get_object_or_404(Customer, pk=pk)  # Lấy đối tượng Customer từ database hoặc trả về 404 nếu không tìm thấy
 
@@ -176,7 +186,46 @@ def deleteAddress(request,pk):
         messages.error(request, f"Error deleting customer: {str(e)}")
     
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@method_decorator(login_required,name='dispatch')
+#Xử lý view trang cập nhật ảnh đại diện
+class updateAvatar(View):
+    def get(self,request,pk):
+        ava = Avatar.objects.get(pk=pk)
+        form = AvatarProfileForm(instance=ava)
+        return render(request,"timezone-master/updateAvatar.html",locals())
+    
+    def post(self,request,pk):
+        form = AvatarProfileForm(request.POST)
+        if form.is_valid():
+            ava = Avatar.objects.get(pk=pk)
+            
+            if 'image' in request.FILES:
+                image = request.FILES['image']
+                ava.image.save(image.name, image)
+            ava.save()
+            messages.success(request,"Congratulations! Profile Update Successfully")
+        else:
+            messages.warning(request,"Invalid Input Data!")
+
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    
 @login_required
+#Xử lý view xóa ảnh đại diện
+def deleteAvatar(request, pk):
+    avatar = get_object_or_404(Avatar, pk=pk)  # Lấy đối tượng Avatar từ database hoặc trả về 404 nếu không tìm thấy
+
+    try:
+        # Xóa đối tượng Avatar
+        avatar.image.delete()  # Xóa hình ảnh từ cơ sở dữ liệu
+        messages.success(request, "Avatar Deleted Successfully")
+    except Exception as e:
+        messages.error(request, f"Error deleting avatar: {str(e)}")
+    
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+#Xử lý view thêm sản phẩm vào giỏ
 def add_to_cart(request):
     if request.method == 'GET':
         user = request.user
@@ -185,6 +234,8 @@ def add_to_cart(request):
         product = Product.objects.get(id=product_id)
 
         if product.quantity > 0:
+            
+
             cart_item, created = Cart.objects.get_or_create(user=user, prod=product)
 
             if not created:
@@ -201,7 +252,8 @@ def add_to_cart(request):
     # Giữ ở trang hiện tại
     return redirect(request.META.get('HTTP_REFERER', '/'))
         
-
+@login_required
+#Xử lý view trang giỏ hàng
 def show_cart(request):
     user = request.user
     cart = Cart.objects.filter(user=user).order_by('id')
@@ -212,11 +264,14 @@ def show_cart(request):
     
     amount = 0
     for p in page_obj.object_list:
-        value = p.quantity * p.prod.price
-        amount += value
+        p.value = p.quantity*(p.prod.price * (1 - p.prod.discount/100))
+        amount += p.value 
+        p.save()
     
     return render(request, "timezone-master/add_to_cart.html", {'cart': page_obj, 'amount': amount})
 
+@login_required
+#Xử lý view khi cập nhật giỏ hàng
 def update_cart(request, action):
     if request.method == 'GET':
         if request.user.is_authenticated:
@@ -225,6 +280,7 @@ def update_cart(request, action):
             if prod_id:
                 try:
                     c = Cart.objects.get(Q(prod=prod_id) & Q(user=request.user))
+                    product = c.prod  # Lấy đối tượng Product từ Cart
                     
                     # Số lượng sản phẩm trong kho
                     available_quantity = c.prod.quantity
@@ -238,33 +294,43 @@ def update_cart(request, action):
                         cart = Cart.objects.filter(user=user)
                         amount = 0
                         for p in cart:
-                            value = p.quantity * p.prod.price
-                            amount += value
+                            p.value = p.quantity*(p.prod.price * (1 - p.prod.discount/100))
+                            p.save()
+                            amount += p.value
+                        
+                      
                         
                         data = {
                             'quantity': c.quantity,
                             'amount': amount,
                         }
                         return JsonResponse(data)
-                    elif action == "minus" and c.quantity > 1:
-                        c.quantity -= 1
-                        c.save()
+                    elif action == "minus":
+                        if c.quantity > 1:
+                            c.quantity -= 1
+                            c.save()
                         
-                        user = request.user
-                        cart = Cart.objects.filter(user=user)
-                        amount = 0
-                        for p in cart:
-                            value = p.quantity * p.prod.price
-                            amount += value
-                        
-                        data = {
-                            'quantity': c.quantity,
-                            'amount': amount,
-                        }
-                        return JsonResponse(data)
+                            user = request.user
+                            cart = Cart.objects.filter(user=user)
+                            amount = 0
+                            for p in cart:
+                                p.value = p.quantity*(p.prod.price * (1 - p.prod.discount/100))
+                                p.save()
+                                amount += p.value
+                 
+                            
+                            data = {
+                                'quantity': c.quantity,
+                                'amount': amount,
+                            }
+                            return JsonResponse(data)
+                        else:
+                            return JsonResponse({'error': 'Invalid action or quantity'}, status=400)
+                            
                     else:
-                        
-                        return JsonResponse({'error': 'Not enough quantity in stock'}, status=400)
+                        return JsonResponse({'error': f'Not enough quantity in stock for {product.pro_name}'}, status=400)
+
+                
                 except Cart.DoesNotExist:
                     return JsonResponse({'error': 'Product not found in cart'}, status=400)
             else:
@@ -272,6 +338,8 @@ def update_cart(request, action):
         else:
             return JsonResponse({'error': 'User is not authenticated'}, status=401)
         
+@login_required   
+#Xử lý view xóa sản phẩm khỏi giỏ
 def remove_from_cart(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
@@ -286,8 +354,7 @@ def remove_from_cart(request):
                     cart = Cart.objects.filter(user=user)
                     amount = 0
                     for p in cart:
-                        value = p.quantity * p.prod.price
-                        amount += value
+                        amount += p.value
                     
                     data = {
                         'amount': amount,
@@ -300,63 +367,91 @@ def remove_from_cart(request):
         else:
             return JsonResponse({'error': 'User is not authenticated'}, status=401)
         
+@method_decorator(login_required,name='dispatch')  
+#Xử lý view khi thanh toán   
 class checkout(View):
     def get(self,request):
         user = request.user
-        add = Customer.objects.filter(user=user)
+        
+        try:
+            add = Customer.objects.get(user=user)
+        except Customer.DoesNotExist:
+            return redirect('/profile')
         cart_items = Cart.objects.filter(user=user)
-        amount = 0
-        for p in cart_items:
-            value = p.quantity * p.prod.price * p.prod.discount if p.prod.discount > 0 else p.quantity * p.prod.price
-            amount += value
-        razoramount = int(amount)
-        client = razorpay.Client(auth=(settings.RAZOR_KEY_ID,settings.RAZOR_KEY_SECRET))
-        data = {"amount":razoramount,"currency":"INR","receipt":"order_rcptid_12"}
-        payment_response = client.order.create(data=data)
-        print(payment_response)
-        order_id = payment_response['id']
-        print(order_id)
-        order_status = payment_response['status']
-        if order_status == 'created':
-            payment = Payment(
-                user=user,
-                amount=amount,
-                razorpay_order_id=order_id,
-                razorpay_payment_status=order_status
-            )
-            payment.save()
-        return render(request,"timezone-master/checkout.html",locals())
-
+        if cart_items:
+            amount = 0
+            for p in cart_items:
+                amount += p.value
+            razoramount = int(amount)
+            client = razorpay.Client(auth=(settings.RAZOR_KEY_ID,settings.RAZOR_KEY_SECRET))
+            data = {"amount":razoramount,"currency":"INR","receipt":"order_rcptid_12"}
+            payment_response = client.order.create(data=data)
+            #print(payment_response)
+            order_id = payment_response['id']
+            #print(order_id)
+            order_status = payment_response['status']
+            if order_status == 'created':
+                payment = Payment(
+                    user=user,
+                    amount=amount,
+                    customer_name = f"{add.first_name} {add.last_name}" if add.first_name and add.last_name else add.first_name or add.last_name or "Unknown",
+                    address = add.address,
+                    phone = add.phone,
+                    razorpay_order_id=order_id,
+                    razorpay_payment_status=order_status
+                )
+                payment.save()
+            return render(request,"timezone-master/checkout.html",locals())
+        else:
+            return redirect('/cart')
+            
+    
+@login_required
+#Xử lý view thanh toán hoàn thành
 def payment_done(request):
-    order_id=request.GET.get('order_id')
-    payment_id=request.GET.get('payment_id')
-    cust_id=request.GET.get('cust_id')
-    #print("payment_done : oid = ",order_id,"pid = ",payment_id,"cid = ",cust_id)
-    user=request.user
-    #return redirect("orders")
-    customer=Customer.objects.get(id=cust_id)
-    #To update payment status and payment id
-    payment=Payment.objects.get(razorpay_order_id=order_id)
+    order_id = request.GET.get('order_id')
+    payment_id = request.GET.get('payment_id')
+    cust_id = request.GET.get('cust_id')
+    user = request.user
+    
+    customer = Customer.objects.get(id=cust_id)
+    payment = Payment.objects.get(razorpay_order_id=order_id)
     payment.paid = True
     payment.razorpay_payment_id = payment_id
     payment.save()
-    #To save order details
+    
     cart = Cart.objects.filter(user=user)
     for c in cart:
-        prod = Product.objects.get(prod=c.prod)
+        # Sử dụng trực tiếp đối tượng sản phẩm từ giỏ hàng
+        prod = c.prod
         prod.quantity -= c.quantity
-        amount = prod.quantity * prod.price * prod.discount if prod.discount > 0 else prod.quantity * prod.price
         prod.save()
-        OrderPlaced(user=user,customer=customer,prod=c.prod,quantity=c.quantity,payment=payment).save()
+        
+        OrderPlaced(user=user, customer=customer, prod=prod, quantity=c.quantity,value=c.value, payment=payment).save()
         c.delete()
+        
     return redirect("orders")
 
+@login_required
+#Xử lý view trang đơn hàng
 def orders(request):
-    queryset = OrderPlaced.objects.filter(user=request.user).order_by('id')
+    queryset = Payment.objects.filter(user=request.user).order_by('id')
     # Lấy các sản phẩm cho trang hiện tại
     order_placed = paginate_data(queryset, request.GET.get('page'))
+    
     return render(request,"timezone-master/orders.html",locals())
 
+@login_required
+#Xử lý view trang chi tiết đơn hàng, 1 đơn hàng có thế có nhiều hơn 1 sản phẩm
+def order_details(request, payment_id):
+    queryset = OrderPlaced.objects.filter(user=request.user,payment=payment_id).order_by('id')
+    # Lấy các sản phẩm cho trang hiện tại
+    order_placed = paginate_data(queryset, request.GET.get('page'))
+    
+    return render(request,"timezone-master/order_details.html",locals())
+
+@login_required
+#Xử lý view thêm sản phẩm yêu thích
 def plus_wishlist(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
@@ -386,7 +481,8 @@ def plus_wishlist(request):
         else:
             return JsonResponse({'message': 'User not authenticated'}, status=401)
 
-
+@login_required
+#Xử lý view xóa sản phẩm yêu thích
 def minus_wishlist(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
@@ -408,12 +504,14 @@ def minus_wishlist(request):
 
         return JsonResponse(data)
 
-
+@login_required
+#Xử lý view trang xem danh sách sản phẩm yêu thích
 def show_wishlist(request):
     queryset = Wishlist.objects.filter(user=request.user).order_by('id')
     products = paginate_data(queryset, request.GET.get('page'))
     return render(request,"timezone-master/wishlist.html",locals())
 
+#Xử lý view trang tìm kiếm
 def search(request):
     query = request.GET['search']
     page_number = request.GET.get('page') or 1
@@ -428,6 +526,7 @@ def search(request):
     else:
         return redirect('/brand')
 
+#Xử lý view trang tìm kiếm nâng cao
 def advanced_search(request):
     pro_name = request.GET.get('pro_name')
     brand = request.GET.get('brand')

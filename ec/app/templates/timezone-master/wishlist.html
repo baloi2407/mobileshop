@@ -14,7 +14,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="hero-cap text-center">
-                            <h2>Watch Shop</h2>
+                            <h2>Mobile Shop</h2>
                         </div>
                     </div>
                 </div>
@@ -35,21 +35,23 @@
                             <div class="row">
                                 
                                 {% for prod in products %}
-                                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-6">
                                         <div class="single-popular-items mb-50 text-center">
                                             <div class="popular-img">
                                                 <img src="{{prod.prod.image.url}}" alt="">
-                                                <div class="img-cap">
-                                                    <span>Add to cart</span>
-                                                </div>
+                                                
                                                 <div class="favorit-items">
                                                     <span class="flaticon-heart"></span>
                                                 </div>
                                             </div>
                                             <div class="popular-caption">
                                                 <h3><a href="{% url 'product-details' prod.prod.id %}">{{prod.prod.pro_name}}</a></h3>
-                                                <span class="text-decoration-line-through text-secondary">$ {{prod.prod.price}}</span>
-                                                <span>$ {{prod.prod.discount}}</span>
+                                                {% if prod.prod.discount > 0 %}
+                                                    <span class="text-danger">$ {{prod.prod.price}}</span>
+                                                    <span class="text-danger">Discount: {{prod.prod.discount}}%</span>
+                                                {% else %}
+                                                    <span class="text-danger">$ {{prod.prod.price}}</span>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
@@ -83,28 +85,6 @@
                         </div>
                     </div>
                     <!-- End Nav Card -->
-                </div>
-                <div class="col-md-4">
-                    <div class="blog_right_sidebar">
-                        <aside class="single_sidebar_widget search_widget">
-                            <form action="#">
-                                <div class="form-group">
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder='Search Keyword'
-                                            onfocus="this.placeholder = ''"
-                                            onblur="this.placeholder = 'Search Keyword'">
-                                        <div class="input-group-append">
-                                            <button class="btns" type="button"><i class="ti-search"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
-                                    type="submit">Search</button>
-                            </form>
-                        </aside>
-
-                        
-                    </div>
                 </div>
             </div>
         </div>

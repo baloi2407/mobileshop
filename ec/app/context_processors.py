@@ -21,7 +21,7 @@ def avatar(request):
     avatar_url = None
 
     if request.user.is_authenticated:
-        latest_avatar = Avatar.objects.filter(user=request.user,is_used=1).order_by('-updated_at').first()
+        latest_avatar = Avatar.objects.filter(user=request.user).order_by('-updated_at').first()
         if latest_avatar:
             avatar_url = latest_avatar.image.url
 

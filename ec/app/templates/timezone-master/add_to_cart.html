@@ -28,7 +28,7 @@
             {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                     {% endfor %}
                 </ul>
             {% endif %}
@@ -39,6 +39,7 @@
                     <tr>
                     <th scope="col">Product</th>
                     <th scope="col">Price</th>
+                    <th scope="col">Discount</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Remove</th>
                     </tr>
@@ -47,6 +48,7 @@
                     
                     {% if cart %}
                         
+                    <div id="error-message" class="text-danger"></div>
                     {% for item in cart %}
                         <tr class="product-container">
                             <td>
@@ -56,7 +58,6 @@
                                 </div>
                                 <div class="media-body">
                                     <p>{{item.prod.pro_name}}</p>
-                                    <div id="error-message" class="text-danger"></div>
 
                                 </div>
                                 </div>
@@ -65,8 +66,11 @@
                                 <h5>${{item.prod.price}}</h5>
                             </td>
                             <td>
+                                <h5>{{item.prod.discount}}%</h5>
+                            </td>
+                            <td>
                                 <div class="my-3">
-                                    <a class="minus-cart btn" pid="{{item.prod.id}}">-</a>
+                                    <a class="minus-cart btn btn-sm" pid="{{item.prod.id}}">-</a>
                                     <span id="quantity">{{item.quantity}}</span>
                                     <a class="plus-cart btn" pid="{{item.prod.id}}">+</a>
                                 </div>
@@ -77,11 +81,12 @@
                         </tr>
                         
                     {% endfor %}
-                        
+                    
 
                     <tr class="bottom_button">
                         <td>
                             <a class="btn_1" href="{% url 'show-cart' %}">Update Cart</a>
+                            <a class="btn_1" href="{% url 'checkout' %}">Checkout</a>
                         </td>
                         <td></td>
                         <td></td>

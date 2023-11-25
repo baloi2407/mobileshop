@@ -1,10 +1,32 @@
-from django.urls import path
-from django.contrib import admin
-from . import views
-from django.conf import settings
-from django.conf.urls.static import static  # Import thêm static
-from django.contrib.auth.views import LoginView, PasswordChangeView,PasswordChangeDoneView, LogoutView, PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
-from . forms import LoginForm,MyPasswordChangeForm,MyPasswordResetForm,MySetPasswordForm
+from django.urls import path  # Import để sử dụng chức năng routing (định tuyến URL) trong Django
+
+from django.contrib import admin  # Import để sử dụng trang quản trị của Django
+
+from . import views  # Import các views (chế độ xem) từ module hiện tại của ứng dụng
+
+from django.conf import settings  # Import cài đặt settings của Django để sử dụng các cấu hình
+
+from django.conf.urls.static import static  # Import để cấu hình tĩnh (static) trong URL
+
+from django.contrib.auth.views import (  # Import các views liên quan đến xác thực và quản lý mật khẩu của người dùng trong Django
+    LoginView,
+    PasswordChangeView,
+    PasswordChangeDoneView,
+    LogoutView,
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+)
+
+from . forms import (  # Import các biểu mẫu từ module forms trong cùng thư mục để sử dụng trong ứng dụng
+    LoginForm,
+    MyPasswordChangeForm,
+    MyPasswordResetForm,
+    MySetPasswordForm,
+)
+
+# Tạo các urls
 
 
 urlpatterns = [
@@ -22,7 +44,7 @@ urlpatterns = [
     path("avatar/",views.avatar,name="avatar"),
     path("uploadAvatar/",views.avatar,name="uploadAvatar"),
     path("updateAvatar/<int:pk>",views.updateAvatar.as_view(),name="updateAvatar"),
-    path("deleteAvatar/<int:pk>",views.avatar,name="deleteAvatar"),
+    path("deleteAvatar/<int:pk>",views.deleteAvatar,name="deleteAvatar"),
 
     path('add-to-cart/',views.add_to_cart,name='add-to-cart'),
     path('cart/',views.show_cart,name='show-cart'),
@@ -34,6 +56,7 @@ urlpatterns = [
     path('checkout/',views.checkout.as_view(),name='checkout'),
     path('paymentdone/',views.payment_done,name='paymentdone'),
     path('orders/',views.orders,name='orders'),
+    path('order_details/<int:payment_id>/',views.order_details,name='order_details'),
 
     path('pluswishlist/', views.plus_wishlist),
     path('minuswishlist/', views.minus_wishlist),

@@ -1,0 +1,18 @@
+<!-- admin/payment/payment/change_list.html -->
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+
+
+<ul>
+  <li>
+      <a href="{% url 'admin:app_payment_import' %}" class="importlink">Import</a>
+  </li>
+  <li>
+      <a href="{% url 'admin:app_payment_export' %}" class="exportlink">Export</a>
+  </li>
+</ul>
+{{ block.super }}
+<h3 class="total-amount">Total amount: {{ total_amount }}$</h3>
+
+{% endblock %}

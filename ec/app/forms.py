@@ -1,11 +1,39 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm, UsernameField, PasswordChangeForm, SetPasswordForm,PasswordResetForm
-from django.contrib.auth.models import User
-from .models import Product,Brand, Customer, Category, News, Cart, OrderPlaced, Payment, Wishlist,Avatar
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
-import re
-from datetime import date
+from django import forms  # Import để sử dụng các forms trong Django
+
+from django.contrib.auth.forms import (  # Import các forms liên quan đến xác thực người dùng trong Django
+    UserCreationForm,
+    UserChangeForm,
+    AuthenticationForm,
+    UsernameField,
+    PasswordChangeForm,
+    SetPasswordForm,
+    PasswordResetForm,
+)
+
+from django.contrib.auth.models import User  # Import mô hình User từ Django để quản lý người dùng
+
+from .models import (  # Import các mô hình từ module models trong cùng thư mục để sử dụng trong ứng dụng
+    Product,
+    Brand,
+    Customer,
+    Cart,
+    OrderPlaced,
+    Payment,
+    Wishlist,
+    Avatar,
+)
+
+from django.core.exceptions import ValidationError  # Import ngoại lệ để xử lý các tình huống đặc biệt trong quá trình xây dựng ứng dụng
+
+from django.core.validators import validate_email  # Import để xác thực địa chỉ email
+
+import re  # Import để sử dụng thư viện re (regular expression)
+
+from datetime import date  # Import để làm việc với dữ liệu thời gian và ngày tháng trong Python
+
+
+#Tạo các forms 
+
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete': 'current-password', 'class': 'form-control'}))
@@ -92,7 +120,7 @@ class BaseForm(forms.ModelForm):
 class BrandForm(BaseForm):
     class Meta:
         model = Brand
-        fields = '__all__'  # Use all fields from the model
+        fields = '__all__'  # Sử dụng tất cả các trường có trong model
     def clean_brand_name(self):
         return self.clean_field('brand_name')
     
@@ -100,7 +128,7 @@ class BrandForm(BaseForm):
 class ProductForm(BaseForm):
     class Meta:
         model = Product
-        fields = '__all__'  # Use all fields from the model
+        fields = '__all__'  # Sử dụng tất cả các trường có trong model
     def clean_pro_name(self):
         return self.clean_field('pro_name')
 
@@ -117,38 +145,35 @@ class ProductForm(BaseForm):
         cleaned_data = super().clean()
         self.clean_selected_field('brand')
         return cleaned_data
-
-class CategoryForm(BaseForm):
-    class Meta:
-        model = Category
-        fields = '__all__'  # Use all fields from the model
-    def clean_cat_name(self):
-        return self.clean_field('cat_name')
+# Bỏ qua
+# class CategoryForm(BaseForm):
+#     class Meta:
+#         model = Category
+#         fields = '__all__'  # Sử dụng tất cả các trường có trong model
+#     def clean_cat_name(self):
+#         return self.clean_field('cat_name')
     
-class NewsForm(BaseForm):
-    class Meta:
-        model = News
-        fields = '__all__'  # Use all fields from the model
-    def clean_news_name(self):
-        return self.clean_field('news_name')
+# class NewsForm(BaseForm):
+#     class Meta:
+#         model = News
+#         fields = '__all__'  # Sử dụng tất cả các trường có trong model
+#     def clean_news_name(self):
+#         return self.clean_field('news_name')
     
-    def clean(self):
-        cleaned_data = super().clean()
-        self.clean_selected_field('cat')
-        return cleaned_data
+#     def clean(self):
+#         cleaned_data = super().clean()
+#         self.clean_selected_field('cat')
+#         return cleaned_data
     
 class CustomerForm(BaseForm):
     class Meta:
         model = Customer
-        fields = '__all__'  # Use all fields from the model
+        fields = '__all__'  # Sử dụng tất cả các trường có trong model
     def clean_first_name(self):
         return self.clean_field('first_name')
     
     def clean_last_name(self):
         return self.clean_field('last_name')
-    
-    def clean_email(self):
-        return self.validate_email(self.cleaned_data.get('email'), "Email")
     
     def clean_phone(self):
         return self.validate_phone(self.cleaned_data.get('phone'), "Phone")
@@ -164,7 +189,7 @@ class CustomerForm(BaseForm):
 class CartForm(BaseForm):
     class Meta:
         model = Cart
-        fields = '__all__'  # Use all fields from the model
+        fields = '__all__'  # Sử dụng tất cả các trường có trong model
     def clean_quantity(self):
         return self.validate_positive_value(self.cleaned_data.get('quantity'), "Quantity") 
     def clean(self):
@@ -177,7 +202,7 @@ class CartForm(BaseForm):
 class OrderPlacedForm(BaseForm):
     class Meta:
         model = OrderPlaced
-        fields = '__all__'  # Use all fields from the model
+        fields = '__all__'  # Sử dụng tất cả các trường có trong model
     def clean(self):
         cleaned_data = super().clean()
         self.clean_selected_field('user')
@@ -188,7 +213,7 @@ class OrderPlacedForm(BaseForm):
 class PaymentForm(BaseForm):
     class Meta:
         model = Payment
-        fields = '__all__'  # Use all fields from the model
+        fields = '__all__'  # Sử dụng tất cả các trường có trong model
     def clean(self):
         cleaned_data = super().clean()
         self.clean_selected_field('user')
@@ -199,7 +224,7 @@ class PaymentForm(BaseForm):
 class WishlistForm(BaseForm):
     class Meta:
         model = Wishlist
-        fields = '__all__'  # Use all fields from the model
+        fields = '__all__'  # Sử dụng tất cả các trường có trong model
     def clean(self):
         cleaned_data = super().clean()
         self.clean_selected_field('user')
@@ -210,9 +235,6 @@ class AvatarAdminForm(forms.ModelForm):
     class Meta:
         model = Avatar
         fields = '__all__'
-        widgets = {
-            'is_used': forms.Select(choices=Avatar.IS_USED_CHOICES),
-        }
     
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}))
@@ -240,27 +262,37 @@ class MySetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(label='New Password', widget=forms.PasswordInput(attrs={'autocomplete':'current-password','class':'form-control'}))
     new_password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput(attrs={'autocomplete':'current-password','class':'form-control'}))
 
-class CustomerProfileForm(forms.ModelForm):
+class CustomerProfileForm(BaseForm):
     class Meta:
         model = Customer
-        fields = ['first_name','last_name','email','address','date_of_birth','phone','avatar']
+        fields = ['first_name','last_name','address','date_of_birth','phone']
         widgets={
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'id': 'inputfirst_name', 'placeholder': 'first_name', 'type': 'text'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'id': 'inputlast_name', 'placeholder': 'last_name', 'type': 'text'}),
-            'email': forms.TextInput(attrs={'class': 'form-control', 'id': 'inputemail', 'placeholder': 'email', 'type': 'email'}),
             'address': forms.Textarea(attrs={'class': 'form-control', 'id': 'inputaddress', 'placeholder': 'address', 'type': 'address'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control','type':'date'}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'id': 'inputphone', 'placeholder': 'Phone','type':'phone'}),
-            'avatar': forms.FileInput(attrs={'class': 'form-control'}),
 
         }
+
+    def clean_first_name(self):
+        return self.clean_field('first_name')
+    
+    def clean_last_name(self):
+        return self.clean_field('last_name')
+    
+    def clean_phone(self):
+        return self.validate_phone(self.cleaned_data.get('phone'), "Phone")
+    
+    def clean_date_of_birth(self):
+        return self.validate_date_of_birth(self.cleaned_data.get('date_of_birth'), "Date of birth")
 
 class AvatarProfileForm(forms.ModelForm):
     class Meta:
         model = Avatar
         fields = ['image']
-        widgets={
-            'avatar': forms.FileInput(attrs={'class': 'form-control'}),
-
+        widgets = {
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
  

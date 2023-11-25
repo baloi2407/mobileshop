@@ -8,7 +8,7 @@
         </title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% comment %} <link rel="manifest" href="site.webmanifest"> {% endcomment %}
+
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'timezone-master/assets/img/favicon.ico' %}">
 
     <!-- CSS here -->
@@ -39,7 +39,7 @@
                     <div class="menu-wrapper">
                         <!-- Logo -->
                         <div class="logo">
-                            <a href=""><img src="{% static 'timezone-master/assets/img/logo/logo.png' %}" alt=""></a>
+                            <a href=""><h1>Mobile <span class="text-danger">Shop</span></h1></a>
                         </div>
                         <!-- Main-menu -->
                         <div class="main-menu d-none d-lg-block">
@@ -55,11 +55,7 @@
                                                 
                                         </ul>
                                     </li>
-                                    <li><a href="">Blog</a>
-                                        <ul class="submenu">
-                                            <li><a href="">Blog</a></li>
-                                        </ul>
-                                    </li>
+                                    
                                     <li><a href="{% url 'about' %}">About</a></li>
                                     <li><a href="{% url 'contact' %}">Contact</a></li>
                                 </ul>
@@ -80,7 +76,7 @@
                                     <div class="dropdown-menu">
                                         
                                         {% if request.user.is_authenticated %}
-                                            <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+                                            <a class="dropdown-item" href="{% url 'address' %}">Profile</a>
                                             <a class="dropdown-item" href="{% url 'password-change' %}">Change Password</a>
                                             <a class="dropdown-item" href="{% url 'orders' %}">Orders</a>
                                             <a class="dropdown-item" href="#">Help</a>
@@ -133,52 +129,13 @@
                             <div class="single-footer-caption mb-30">
                                 <!-- logo -->
                                 <div class="footer-logo">
-                                    <a href="index.html"><img src="{% static 'timezone-master/assets/img/logo/logo2_footer.png' %}" alt=""></a>
+                                    <a href="#"><h4>Mobile <span class="text-danger">Shop</span></h4></a>
                                 </div>
                                 <div class="footer-tittle">
                                     <div class="footer-pera">
                                         <p>Asorem ipsum adipolor sdit amet, consectetur adipisicing elitcf sed do eiusmod tem.</p>
                                 </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-2 col-lg-3 col-md-3 col-sm-5">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle">
-                                <h4>Quick Links</h4>
-                                <ul>
-                                    <li><a href="#">About</a></li>
-                                    <li><a href="#"> Offers & Discounts</a></li>
-                                    <li><a href="#"> Get Coupon</a></li>
-                                    <li><a href="#">  Contact Us</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-7">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle">
-                                <h4>New Products</h4>
-                                <ul>
-                                    <li><a href="#">Woman Cloth</a></li>
-                                    <li><a href="#">Fashion Accessories</a></li>
-                                    <li><a href="#"> Man Accessories</a></li>
-                                    <li><a href="#"> Rubber made Toys</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-5 col-sm-7">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle">
-                                <h4>Support</h4>
-                                <ul>
-                                    <li><a href="#">Frequently Asked Questions</a></li>
-                                    <li><a href="#">Terms & Conditions</a></li>
-                                    <li><a href="#">Privacy Policy</a></li>
-                                    <li><a href="#">Report a Payment Issue</a></li>
-                                </ul>
                             </div>
                         </div>
                     </div>

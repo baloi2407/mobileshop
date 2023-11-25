@@ -14,9 +14,6 @@
             <div class="col-md-2 border-right border-danger">
                 <h3>Welcome <span class="text-capitalize">{{request.user}}</span></h3>
                 <div class="row">
-                    <div class="col">
-                        <a href="{% url 'profile' %}" class="btn w-100">Profile</a>
-                    </div>
                     <div class="col mt-2">
                         <a href="{% url 'address' %}" class="btn w-100">Address</a>
                     </div>
@@ -41,23 +38,60 @@
                                         <p>No avatar available</p>
                                     {% endif %}
                                     <a href="{% url 'updateAvatar' pk=ava.id %}" class="btn" type="button">Update</a>
-                                    <a href="{% url 'deleteAvatar' pk=ava.id %}" class="btn" type="button">Delete</a>
+                                    <a href="#" class="btn btn-danger delete-avatar" data-avatar-id="{{ ava.id }}">Delete</a>
                                 </div>
                             </div>
                         </div>                    
                     </div>                
+                    {% if messages %}                     
+                        {% for msg in messages %}
+                            <div class="alert alert-{{msg.tags}}" role="alert">{{msg}}</div>
+                        {% endfor %}
+                    {% endif %}
             </div>
             
 
-                {% if messages %}                     
-                    {% for msg in messages %}
-                        <div class="alert alert-{{msg.tags}}" role="alert">{{msg}}</div>
-                    {% endfor %}
-                {% endif %}
             </div>
         </div>
     </div>
     
+    <!-- Modal -->
+    <div class="modal" id="deleteAvatarModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Confirm Deletion</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <p>Are you sure you want to delete this avatar?</p>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <a href="#" class="btn btn-danger" id="confirmDelete">Delete</a>
+            </div>
+        </div>
+        </div>
+    </div>
 </main>
+
+<script>
+    // JavaScript to handle modal display and delete confirmation
+    document.querySelectorAll('.delete-avatar').forEach(button => {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const avatarId = this.getAttribute('data-avatar-id');
+        const deleteUrl = `/deleteAvatar/${avatarId}`;
+  
+        // Set the href of the 'Delete' button in the modal
+        document.getElementById('confirmDelete').setAttribute('href', deleteUrl);
+  
+        // Show the modal
+        $('#deleteAvatarModal').modal('show');
+      });
+    });
+  </script>
 {% endblock main %}
     

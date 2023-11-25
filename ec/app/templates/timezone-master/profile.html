@@ -14,9 +14,6 @@
             <div class="col-md-2 border-right border-danger">
                 <h3>Welcome <span class="text-capitalize">{{request.user}}</span></h3>
                 <div class="row">
-                    <div class="col">
-                        <a href="{% url 'profile' %}" class="btn w-100">Profile</a>
-                    </div>
                     <div class="col mt-2">
                         <a href="{% url 'address' %}" class="btn w-100">Address</a>
                     </div>
@@ -40,10 +37,6 @@
                             {{ form.last_name }}
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="inputLocality">Email</label>
-                        {{ form.email }}
-                    </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputCity">Address</label>
@@ -57,10 +50,6 @@
                             <label for="inputZip">Phone</label>
                             {{ form.phone }}
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputLocality">Avatar</label>
-                        {{ form.avatar }}
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                     

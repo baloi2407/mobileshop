@@ -1,10 +1,20 @@
-from django.utils.html import format_html
-import pandas as pd
-from django.http import HttpResponse
-from openpyxl import Workbook
-from openpyxl.styles import NamedStyle
-from openpyxl.utils.dataframe import dataframe_to_rows
-import openpyxl
+from django.utils.html import format_html  # Import để định dạng HTML trong Django
+
+import pandas as pd  # Import thư viện Pandas để làm việc với dữ liệu dạng bảng
+
+from django.http import HttpResponse  # Import để tạo và trả về phản hồi HTTP trong Django
+
+from openpyxl import Workbook  # Import để tạo và làm việc với tệp Excel trong Python sử dụng openpyxl
+
+from openpyxl.styles import NamedStyle  # Import để tạo và sử dụng các kiểu định dạng trong openpyxl
+
+from openpyxl.utils.dataframe import dataframe_to_rows  # Import để chuyển đổi dữ liệu từ DataFrame của Pandas thành hàng và cột trong openpyxl
+
+import openpyxl  # Import thư viện openpyxl để làm việc với tệp Excel trong Python
+
+
+# Tạo các mixin
+
 class Mixins:
     def is_used_display(self, obj):
         return 'Use' if obj.is_used == 1 else 'Not'
@@ -97,10 +107,8 @@ class Mixins:
                     cell = sheet.cell(row=row_num, column=col_num)
                     cell.style = date_style
         else:
-            print("Không tìm thấy cột 'created_at' hoặc 'updated_at'. Không thể áp dụng style.")
+            print("Column 'created_at' or 'updated_at' was not found. Cannot apply style.")
 
-       
-                
 
         # Ghi workbook vào response
         workbook.save(response)

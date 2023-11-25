@@ -23,44 +23,49 @@
             <div class="card-body">
               <h5>Product: {{item.prod.pro_name}}</h5>
               <p>Quantity: {{item.quantity}}</p>
-              <p class="fw-bold">Sub Total: {{ item.quantity|mul:item.prod.price }}$</p>
+              <p>Discount: {{item.prod.discount}}%</p>
+              <p class="fw-bold">Sub Total: ${{ item.value }}</p>
             </div>
           </div>
         {% endfor %}
-        <p class="fw-bold">Total Cost = {{amount}}$</p>
+        <p class="fw-bold">Total Cost = ${{amount}}</p>
         <small>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Hic, doloribus dolorum! Hic, consequuntur doloribus temporibus dolorem quos accusamus ullam provident mollitia, enim officia debitis blanditiis fuga, inventore animi maxime fugiat?</small>  
       </div>
       <div class="col-sm-4 offset-sm-1">
-        <h4>Select Shipping Address</h4>
+        <h4>Shipping Address</h4>
         <hr>
-        <form action="post" id="myform">
-          {% csrf_token %}
-          
-          {% for ad in add %}
-            <div class="card">
-              <div class="card-body">
-                <h5>{{ad.first_name}}</h5>
-                <p>Email: {{ad.email}}</p>
-                <p>Mobile: {{ad.phone}}</p>
-                <p>{{ad.address}} </p>
-              </div>
-            </div>
-            <div class="form-check mt-2 mb-5">
-              <input type="radio" class="form-check-input" name="custid" id="custadd{{forloop.counter}}" value="{{ad.id}}">
-              <label class="form-check-label fw-bold" for="custadd{{forloop.counter}}">Address: {{forloop.counter}}</label>
-            </div>
-          {% endfor %}
-          <div class="form-check mb-3">
-            <label for="amount" class="form-label">Total Amount</label>
-            <input type="number" class="form-control" name="amount" value="{{amount}}" readonly>
-          </div>
-          <div class="text-end">
-            {% comment %} <button type="submit" class="btn btn-waring mt-3 px-5 fw-bold">Continue</button> {% endcomment %}
-            <button id="rzp-button1" type="submit" class="btn btn-waring mt-3 px-5 fw-bold">Payment</button>
-
-          </div>
+        
+        {% if add %}
+          <form action="post" id="myform">
+            {% csrf_token %}
             
-        </form>
+              <div class="card">
+                <div class="card-body">
+                  <h5>{{add.first_name}}</h5>
+                  <p>Email: {{add.email}}</p>
+                  <p>Mobile: {{add.phone}}</p>
+                  <p>{{add.address}} </p>
+                </div>
+              </div>
+              <div class="form-check mt-2 mb-5">
+                <input type="hidden" class="form-check-input" name="custid" id="custadd{{forloop.counter}}" value="{{add.id}}">
+              </div>
+            <div class="form-check mb-3">
+              <label for="amount" class="form-label">Total Amount</label>
+              <input type="number" class="form-control" name="amount" value="{{amount}}" readonly>
+            </div>
+            <div class="text-end">
+              {% comment %} <button type="submit" class="btn btn-waring mt-3 px-5 fw-bold">Continue</button> {% endcomment %}
+              <button id="rzp-button1" type="submit" class="btn btn-waring mt-3 px-5 fw-bold">Payment</button>
+
+            </div>
+              
+          </form>
+          
+        {% else %}
+          You are not having a address <a class="btn" href="{% url 'profile' %}">Checkout</a>
+        {% endif %}
+          
       </div>
     </div>
   </div>

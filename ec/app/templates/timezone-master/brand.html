@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Category : {{val|title}}
+    Brand : {{val|title}}
 {% endblock title %}
     
 {% block main %}
@@ -14,7 +14,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="hero-cap text-center">
-                            <h2>Watch Shop</h2>
+                            <h2>Mobile Shop</h2>
                         </div>
                     </div>
                 </div>
@@ -37,41 +37,12 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <div class="row product-btn justify-content-between mb-40">
-                        <div class="properties__button">
-                            <!--Nav Button  -->
-                            <nav>                                                      
-                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">NewestArrivals</a>
-                                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false"> Price high to low</a>
-                                    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false"> Most populer </a>
-                                </div>
-                            </nav>
-                            <!--End Nav Button  -->
-                        </div>
-                        <!-- Grid and List view -->
-                        <div class="grid-list-view">
-                        </div>
-                        <!-- Select items -->
-                        <div class="select-this">
-                            <form action="#">
-                                <div class="select-itms">
-                                    <select name="select" id="select1">
-                                        <option value="">40 per page</option>
-                                        <option value="">50 per page</option>
-                                        <option value="">60 per page</option>
-                                        <option value="">70 per page</option>
-                                    </select>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                    
                     <!-- Nav Card -->
                     <div class="tab-content" id="nav-tabContent">
                         <!-- card one -->
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                             <div class="row">
-                                
                                 {% for prod in products %}
                                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                         <div class="single-popular-items mb-50 text-center">
@@ -83,12 +54,19 @@
                                                         <button type="submit" class="btn btn-primary d-block w-100">Add to cart</button>
                                                     </form>
                                                 </div>
-                                               
+                                                
                                             </div>
                                             <div class="popular-caption">
                                                 <h3><a href="{% url 'product-details' prod.id %}">{{prod.pro_name}}</a></h3>
-                                                <span class="text-decoration-line-through text-secondary">$ {{prod.price}}</span>
-                                                <span>$ {{prod.discount}}</span>
+                                                {% if prod.discount > 0 %}
+                                                    <span class="text-danger">$ {{prod.price}}</span>
+                                                    <span class="text-danger">Discount: {{prod.discount}}%</span>
+                                                {% else %}
+                                                    <span class="text-danger">$ {{prod.price}}</span>
+                                                {% endif %}
+                                                
+                                               
+                                                    
                                             </div>
                                         </div>
                                     </div>
