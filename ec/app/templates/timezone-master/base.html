@@ -55,6 +55,15 @@
                                                 
                                         </ul>
                                     </li>
+                                    <li><a href="{% url 'news-default' %}">News</a>
+                                        <ul class="submenu">
+                                            
+                                            {% for news_cat in news_category %}
+                                            <li><a href="{% url 'news' news_cat.id %}">{{news_cat.news_cat_name}}</a></li>
+                                            {% endfor %}
+                                                
+                                        </ul>
+                                    </li>
                                     
                                     <li><a href="{% url 'about' %}">About</a></li>
                                     <li><a href="{% url 'contact' %}">Contact</a></li>
@@ -72,7 +81,14 @@
                                 </li>
 
                                 <li> 
-                                    <a class=" dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{avatar}}" class="rounded-circle img-fluid" style="width: 30px; height: 30px;"></a>
+                                    
+                                    {% if avatar%}
+                                    <a class=" dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{avatar}}" class="rounded-circle img-fluid" style="width: 30px; height: 30px;"> | {{request.user.username}} </a>
+                                    {% else %}
+                                    
+                                    <a class=" dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="" class="rounded-circle img-fluid" style="width: 30px; height: 30px;"></a>
+                                    {% endif %}
+                                        
                                     <div class="dropdown-menu">
                                         
                                         {% if request.user.is_authenticated %}
@@ -117,7 +133,7 @@
         
     {% block main %}{% endblock main %}
     
-    {% block payment-gateway %}{% endblock payment-gateway %}
+    
         
     <footer>
         <!-- Footer Start-->

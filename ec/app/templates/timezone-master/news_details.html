@@ -1,0 +1,98 @@
+{% extends 'timezone-master/base.html' %}
+{% load static %}
+
+{% block title %}
+    News Details : {{val|title}}
+{% endblock title %}
+    
+{% block main %}
+<main>
+    <!-- Hero Area Start-->
+    <div class="slider-area ">
+        <div class="single-slider slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap text-center">
+                            <h2>Mobile Shop</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero Area End-->
+    
+    <section class="blog_area single-post-area section-padding">
+        <div class="container">
+           <div class="row">
+              <div class="col-lg-8 posts-list">
+                 <div class="single-post">
+                    <div class="feature-img">
+                       <img class="img-fluid" src="assets/img/blog/single_blog_1.png" alt="">
+                    </div>
+                    <div class="blog_details">
+                       <h2>{{news.news_name}}
+                       </h2>
+                       <ul class="blog-info-link mt-3 mb-4">
+                          <li><a href="#"><i class="fa fa-user"></i> Travel, Lifestyle</a></li>
+                          <li><a href="#"><i class="fa fa-comments"></i> 03 Comments</a></li>
+                       </ul>
+                       <p class="excert">
+                        {{news.summary}}
+                       </p>
+                       <p>
+                        {% if news.image %}
+                            <img class="card-img rounded-0" src="{{news.image.url}}" alt="">
+                        {% endif %}
+                       </p>
+                       
+                       <p>
+                        {{news.content}}
+                       </p>
+                       <p>
+                        Source: {{news.source}}
+                       </p>
+                    </div>
+                 </div>
+              </div>
+              <div class="col-lg-4">
+                 <div class="blog_right_sidebar">
+                    <aside class="single_sidebar_widget search_widget">
+                       <form action="#">
+                          <div class="form-group">
+                             <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder='Search Keyword'
+                                   onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search Keyword'">
+                                <div class="input-group-append">
+                                   <button class="btns" type="button"><i class="ti-search"></i></button>
+                                </div>
+                             </div>
+                          </div>
+                          <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
+                             type="submit">Search</button>
+                       </form>
+                    </aside>
+                    <aside class="single_sidebar_widget post_category_widget">
+                       <h4 class="widget_title">Category</h4>
+                       <ul class="list cat-list">
+                            {% for news_cat in news_category %}
+                                <li>
+                                    <a href="{% url 'news' news_cat.id %}" class="d-flex">
+                                        <p>{{news_cat.news_cat_name}}</p>
+                                    </a>
+                                </li>
+                                
+                            {% endfor %}
+                       </ul>
+                    </aside>
+                 </div>
+              </div>
+           </div>
+        </div>
+    </section>
+    <!-- Shop Method End-->
+</main>
+{% endblock main %}
+
+

@@ -44,17 +44,69 @@
                 <div class="row">
                     <div class="col-7">
                         <h3>{{product.pro_name}}</h3>
-                            <img src="{{product.image.url}}" alt="">
-                        <p>
-                            {{product.summary}}
-                        </p>
+                            <img src="{{product.image.url}}" alt="" width="361" height="489">
+                            <div class="container mt-2">
+                                <table class="table">
+                                  <tbody>
+                                    <tr>
+                                      <th>Display</th>
+                                      <td>{{product.display_size}}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Operating System</th>
+                                      <td>{{product.os}}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Rear camera</th>
+                                      <td>{{product.rear_camera}}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Front camera</th>
+                                      <td>{{product.front_camera}}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Chip</th>
+                                      <td>{{product.chip}}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>RAM</th>
+                                      <td>{{product.ram}}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Storage</th>
+                                      <td>{{product.storage}}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>SIM</th>
+                                      <td>{{product.sim}}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Battery capacity</th>
+                                      <td>{{product.battery_capacity}}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Brand:</th>
+                                      <td>{{brand_name}}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              
+                            
+
+                        
                     </div>
                     <div class="col-5">
                         <div class="card_area">
                             <div class="product_price mb-5">
                                 <h3>Price:</h3>
                                 <span class="text-danger">Selling Price: ${{product.price}}</span><br>
-                                <span class="text-muted text-decoration-line-through">Discounted Price: ${{product.discount}}</span>
+                                
+                                {% if product.discount %}
+                                <span class="text-muted text-danger">Discounted: {{product.discount}}%</span>
+                                    
+                                {% endif %}
+                                    
                             </div>
                             
                             <div class="product_count_area">

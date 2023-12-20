@@ -10,3 +10,9 @@ def upload_to_news(instance, filename):
         return generate_random_filename(instance, filename, 'news')
 def upload_to_avatar(instance, filename):
         return generate_random_filename(instance, filename, 'avatar')
+def upload_to_news_category(instance, filename):
+        return generate_random_filename(instance, filename, 'news_category')
+def upload_to_supplier(instance, filename):
+        return generate_random_filename(instance, filename, 'supplier')
+def upload_to_about(instance, filename):
+        return generate_random_filename(instance, filename, 'about')

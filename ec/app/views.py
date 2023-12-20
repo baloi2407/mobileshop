@@ -7,13 +7,18 @@ from django.views import View  # Import để sử dụng lớp View của Djang
 from . models import (  # Import các mô hình từ module models trong cùng thư mục để sử dụng trong ứng dụng
     Product,
     Brand,
-    Customer,
+    CustomerAddress,
     Cart,
     Payment,
     OrderPlaced,
     Wishlist,
     Avatar,
+    News_Category,
+    News,
+    Contact,
+    About
 )
+
 
 import razorpay  # Import để sử dụng gói razorpay cho thanh toán
 
@@ -24,6 +29,8 @@ from django.db.models import Q, Count  # Import để thực hiện các truy v�
 from django.conf import settings  # Import cài đặt settings của Django để sử dụng các cấu hình
 
 from django.contrib.auth.decorators import login_required # Import để bảo vệ view cần đăng nhập để truy cập
+
+
 from django.utils.decorators import method_decorator
 
 from urllib.parse import urlencode  # Import để mã hóa các thông tin URL
@@ -35,7 +42,7 @@ from . forms import (  # Import các biểu mẫu từ module forms trong cùng 
 )
 
 from . pagination import paginate_data  # Import hàm paginate_data từ module pagination để phân trang dữ liệu
-
+from django.contrib.auth.forms import UserChangeForm
 # Tạo các views
 
 #hàm xử lý view trang home
@@ -50,11 +57,13 @@ def home(request):
 
 #hàm xử lý view trang about
 def about(request):
-    return render(request,'timezone-master/about.html')
+    about = About.objects.filter(status="Active").order_by('-updated_at').first()
+    return render(request,'timezone-master/about.html',locals())
 
 #hàm xử lý view trang contact
 def contact(request):
-    return render(request,'timezone-master/contact.html')
+    contact = Contact.objects.filter(status="Active").order_by('-updated_at').first()
+    return render(request,'timezone-master/contact.html',locals())
 
 #hàm xử lý view trang brand(Hiển thị danh sách sản phẩm theo nhãn)
 class BrandView(View):
@@ -74,6 +83,7 @@ class BrandView(View):
 class ProductDetail(View):
     def get(self,request,pk):
         product = Product.objects.get(pk=pk)
+        brand_name = product.brand.brand_name
         wishlist = Wishlist.objects.filter(Q(prod=product) & Q(user=request.user))
         return render(request,"timezone-master/product_details.html",locals())
     
@@ -87,16 +97,35 @@ class CustomerRegistrationView(View):
         if form.is_valid():
             form.save()
             messages.success(request,"Congratulations! User Register Successfully")
+            return redirect("/accounts/login/")
         else:
             messages.warning(request,"Invalid Input Data!")
-        return render(request,"timezone-master/customer_registration.html",locals())
-    
+            return render(request,"timezone-master/customer_registration.html",locals())
+        
+
+
 @method_decorator(login_required,name='dispatch')
-#Xử lý view trang thông tin địa chỉ 
+#Xử lý view trang prodfile user(phát triển sau)
 class ProfileView(View):
+    pass
+
+        
+@login_required    
+#Xử lý view trang địa chỉ
+def address(request):
+    try:
+        add = CustomerAddress.objects.get(user=request.user)
+    except CustomerAddress.DoesNotExist:
+        add = None
+
+    return render(request,"timezone-master/address.html",locals())
+
+#Thêm thông tin địa chỉ cho tài khoản
+@method_decorator(login_required,name='dispatch')
+class createAddressView(View):
     def get(self,request):
         form = CustomerProfileForm()
-        return render(request,"timezone-master/profile.html",locals())
+        return render(request,"timezone-master/createAddress.html",locals())
     def post(self, request):
         form = CustomerProfileForm(request.POST, request.FILES)  # Phải bao gồm `request.FILES` cho các trường dạng file
         if form.is_valid():
@@ -107,18 +136,15 @@ class ProfileView(View):
             date_of_birth = form.cleaned_data['date_of_birth']
             phone = form.cleaned_data['phone']
 
-            # Tạo một dictionary chứa các thông tin cần truyền vào
-            customer_data = {
-                'user': user,
-                'first_name': first_name,
-                'last_name': last_name,
-                'address': address,
-                'date_of_birth': date_of_birth,
-                'phone': phone
-            }
-
-            reg = Customer(**customer_data)
-            reg.save()
+            # Tạo một bản ghi mới của CustomerAddress
+            CustomerAddress.objects.create(
+                user=user,
+                first_name=first_name,
+                last_name=last_name,
+                address=address,
+                date_of_birth=date_of_birth,
+                phone=phone
+            )
      
             messages.success(request, "Congratulations! Profile Saved Successfully")
 
@@ -127,39 +153,18 @@ class ProfileView(View):
         else:
             messages.warning(request, "Invalid Input Data!")
             return render(request, "timezone-master/profile.html", {'form': form})
-        
-@login_required    
-#Xử lý view trang địa chỉ
-def address(request):
-    try:
-        add = Customer.objects.get(user=request.user)
-    except Customer.DoesNotExist:
-        add = None
 
-    return render(request,"timezone-master/address.html",locals())
-
-@login_required
-#Xử lý view trang ảnh đại diện
-def avatar(request):
-    try:
-        ava = Avatar.objects.get(user=request.user)
-    except Avatar.DoesNotExist:
-        # Create a new Avatar object for the user if it doesn't exist
-        ava = Avatar.objects.create(user=request.user)
-    return render(request,"timezone-master/avatar.html",locals())
-
-@method_decorator(login_required,name='dispatch')
 #Xử lý view trang cập nhật thông tin địa chỉ
 class updateAddress(View):
     def get(self,request,pk):
-        add = Customer.objects.get(pk=pk)
+        add = CustomerAddress.objects.get(pk=pk)
         form = CustomerProfileForm(instance=add)
         return render(request,"timezone-master/updateAddress.html",locals())
     
     def post(self,request,pk):
         form = CustomerProfileForm(request.POST)
         if form.is_valid():
-            add = Customer.objects.get(pk=pk)
+            add = CustomerAddress.objects.get(pk=pk)
             add.first_name = form.cleaned_data['first_name']
             add.last_name = form.cleaned_data['last_name']
             add.address = form.cleaned_data['address']
@@ -176,16 +181,26 @@ class updateAddress(View):
 @login_required
 #Xử lý view xóa thông tin địa chỉ
 def deleteAddress(request,pk):
-    customer = get_object_or_404(Customer, pk=pk)  # Lấy đối tượng Customer từ database hoặc trả về 404 nếu không tìm thấy
+    customer = get_object_or_404(CustomerAddress, pk=pk)  # Lấy đối tượng Customer từ database hoặc trả về 404 nếu không tìm thấy
 
     try:
         # Xóa đối tượng Customer
-        customer.delete()  # Xóa khách hàng từ cơ sở dữ liệu
+        CustomerAddress.delete()  # Xóa khách hàng từ cơ sở dữ liệu
         messages.success(request, "Customer Deleted Successfully")
     except Exception as e:
         messages.error(request, f"Error deleting customer: {str(e)}")
     
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+#Xử lý view trang ảnh đại diện
+def avatar(request):
+    try:
+        ava = Avatar.objects.get(user=request.user)
+    except Avatar.DoesNotExist:
+        # Create a new Avatar object for the user if it doesn't exist
+        ava = Avatar.objects.create(user=request.user)
+    return render(request,"timezone-master/avatar.html",locals())
 
 @method_decorator(login_required,name='dispatch')
 #Xử lý view trang cập nhật ảnh đại diện
@@ -374,9 +389,9 @@ class checkout(View):
         user = request.user
         
         try:
-            add = Customer.objects.get(user=user)
-        except Customer.DoesNotExist:
-            return redirect('/profile')
+            add = CustomerAddress.objects.get(user=user)
+        except CustomerAddress.DoesNotExist:
+            return redirect('/address')
         cart_items = Cart.objects.filter(user=user)
         if cart_items:
             amount = 0
@@ -389,24 +404,27 @@ class checkout(View):
             #print(payment_response)
             order_id = payment_response['id']
             #print(order_id)
-            order_status = payment_response['status']
-            if order_status == 'created':
-                payment = Payment(
-                    user=user,
-                    amount=amount,
-                    customer_name = f"{add.first_name} {add.last_name}" if add.first_name and add.last_name else add.first_name or add.last_name or "Unknown",
-                    address = add.address,
-                    phone = add.phone,
-                    razorpay_order_id=order_id,
-                    razorpay_payment_status=order_status
-                )
-                payment.save()
-            return render(request,"timezone-master/checkout.html",locals())
+            if order_id:
+                order_status = payment_response['status']
+                if order_status == 'created':
+                    payment = Payment(
+                        user=user,
+                        amount=amount,
+                        customer_name = f"{add.first_name} {add.last_name}" if add.first_name and add.last_name else add.first_name or add.last_name or "Unknown",
+                        address = add.address,
+                        phone = add.phone,
+                        razorpay_order_id=order_id,
+                        razorpay_payment_status=order_status
+                    )
+                    payment.save()
+                return render(request,"timezone-master/checkout.html",locals())
+            else:
+                return redirect('/cart')
         else:
             return redirect('/cart')
             
     
-@login_required
+
 #Xử lý view thanh toán hoàn thành
 def payment_done(request):
     order_id = request.GET.get('order_id')
@@ -414,7 +432,7 @@ def payment_done(request):
     cust_id = request.GET.get('cust_id')
     user = request.user
     
-    customer = Customer.objects.get(id=cust_id)
+    customer = CustomerAddress.objects.get(id=cust_id)
     payment = Payment.objects.get(razorpay_order_id=order_id)
     payment.paid = True
     payment.razorpay_payment_id = payment_id
@@ -432,16 +450,16 @@ def payment_done(request):
         
     return redirect("orders")
 
-@login_required
+
 #Xử lý view trang đơn hàng
 def orders(request):
-    queryset = Payment.objects.filter(user=request.user).order_by('id')
+    queryset = Payment.objects.filter(user=request.user).order_by('-id')
     # Lấy các sản phẩm cho trang hiện tại
     order_placed = paginate_data(queryset, request.GET.get('page'))
     
     return render(request,"timezone-master/orders.html",locals())
 
-@login_required
+
 #Xử lý view trang chi tiết đơn hàng, 1 đơn hàng có thế có nhiều hơn 1 sản phẩm
 def order_details(request, payment_id):
     queryset = OrderPlaced.objects.filter(user=request.user,payment=payment_id).order_by('id')
@@ -561,3 +579,52 @@ def advanced_search(request):
     products = paginate_data(products, request.GET.get('page'))
 
     return render(request,"timezone-master/advanced_search.html",locals())
+
+
+class News_CategoryView(View):
+    def get(self, request, val=None, page=1):
+        # If there is no val parameter, query all products in descending order
+        if val is not None:
+            queryset = News.objects.filter(news_cat_id=val).order_by('-updated_at')
+        else:
+            queryset = News.objects.all().order_by('-updated_at')        
+        
+        # Lấy các sản phẩm cho trang hiện tại
+        news = paginate_data(queryset, request.GET.get('page'))
+
+        return render(request, "timezone-master/news.html", locals())
+
+#Xử lý view trang chi tiết sản phẩm
+class NewsDetail(View):
+    def get(self,request,pk):
+        news = News.objects.get(pk=pk)
+        news_cat_name = news.news_cat.news_cat_name
+        return render(request,"timezone-master/news_details.html",locals())
+
+#Xử lý view trang tìm kiếm tin tức
+def search_news(request):
+    query = request.GET['search']
+    page_number = request.GET.get('page') or 1
+    if query:
+        search_params = urlencode({'search': query, 'page': page_number})
+        search_url = f"/search/?{search_params}"  # Tạo URL chứa thông tin tìm kiếm và số trang
+
+        queryset = News.objects.filter(Q(news_name__icontains=query)).order_by('id')
+        # Lấy các sản phẩm cho trang hiện tại
+        news = paginate_data(queryset, request.GET.get('page'))
+        return render(request,"timezone-master/search_news.html",locals())
+    else:
+        return redirect('/news')
+
+def UserEmail(request):
+    return render(request,"timezone-master/user_email.html",locals())
+
+@login_required
+def update_email(request):
+    if request.method == 'POST':
+        new_email = request.POST.get('email')
+        request.user.email = new_email
+        request.user.save()
+        messages.success(request, 'Email updated successfully!')
+        return redirect('/user-email')  
+    return render(request,"timezone-master/user_email.html",locals())

@@ -20,6 +20,9 @@
                     <div class="col mt-2">
                         <a href="{% url 'avatar' %}" class="btn w-100">Avatar</a>
                     </div>
+                    <div class="col mt-2">
+                        <a href="{% url 'user-email' %}" class="btn w-100">Email</a>
+                    </div>
                 </div>
                             
             </div>
@@ -63,7 +66,7 @@
                                         </div>
                                     {% else %}
                                         <div class="col">
-                                            <a href="{% url 'profile' %}" class="btn w-100">Create Address</a>
+                                            <a href="{% url 'createAddress' %}" class="btn w-100">Create Address</a>
                                         </div>
                                     {% endif %}
                                         

@@ -8,6 +8,10 @@ from . uploads import (  # Import các hàm hoặc biến từ module uploads đ
     upload_to_brand,
     upload_to_product,
     upload_to_avatar,
+    upload_to_news_category,
+    upload_to_news,
+    upload_to_supplier,
+    upload_to_about,
 )
 
 from django.core.exceptions import ValidationError  # Import ngoại lệ để xử lý các tình huống đặc biệt trong quá trình xây dựng ứng dụng
@@ -26,6 +30,14 @@ STATUS_CHOICES = (
     ('Delivered','Delivered'),
     ('Cancel','Cancel'),
     ('Pending','Pending'),
+)
+STATUS_PAID = (
+    ('Not paid','Not paid'),
+    ('Paid','Paid'),
+)
+STATUS_SELL = (
+    ('Not sell','Not sell'),
+    ('Sell','Sell'),
 )
 class Brand(models.Model):
     brand_name = models.CharField(max_length=100)
@@ -88,7 +100,7 @@ class Product(models.Model):
         verbose_name = "Product"
         verbose_name_plural = "Products"
 
-class Customer(models.Model):
+class CustomerAddress(models.Model):
     first_name = models.CharField(max_length=100,blank=True,null=True)
     last_name = models.CharField(max_length=100,blank=True,null=True)
     address = models.TextField(blank=True,null=True)
@@ -103,7 +115,7 @@ class Customer(models.Model):
         return self.first_name
 
     class Meta:
-        db_table = 'customers'
+        db_table = 'customer_addresses'
         verbose_name = "Customer"
         verbose_name_plural = "Customers"
 
@@ -148,7 +160,7 @@ class Payment(models.Model):
 
 class OrderPlaced(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomerAddress, on_delete=models.CASCADE)
     prod = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     value = models.FloatField(blank=True, null=True)
@@ -175,56 +187,8 @@ class Wishlist(models.Model):
         db_table = 'wishlist'
         verbose_name = "Wish List"
         verbose_name_plural = "Wish List"
-# Bỏ qua
-# class Category(models.Model):
-#     cat_name = models.CharField(max_length=100)
-#     summary = models.CharField(max_length=100,blank=True,null=True)
-#     image = models.ImageField(upload_to=upload_to_category, blank=True, null=True)
-#     content = models.TextField(blank=True,null=True)
-#     sku = models.CharField(max_length=100,blank=True,null=True)
-#     alias = models.CharField(max_length=100, blank=True, null=True)
-#     title = models.CharField(max_length=100,blank=True,null=True)
-#     description = models.TextField(blank=True,null=True)
-#     status = models.CharField(max_length=50, choices=STATUS, default='Active')
-#     created_at = models.DateTimeField(default=timezone.now)
-#     updated_at = models.DateTimeField(auto_now=True)    
-
-#     def __str__(self):
-#         return self.cat_name
-    
-#     class Meta:
-#         db_table = 'categories'
-#         verbose_name = "Category"
-#         verbose_name_plural = "Categories"
-
-# class News(models.Model):
-#     news_name = models.CharField(max_length=100,blank=True, null=True)
-#     summary = models.CharField(max_length=100,blank=True, null=True)
-#     content = models.TextField(blank=True, null=True)
-#     image = models.ImageField(upload_to=upload_to_news, blank=True, null=True)
-#     cat = models.ForeignKey(Category, on_delete=models.CASCADE,blank=True, null=True)
-#     sku = models.CharField(max_length=100,blank=True, null=True)
-#     alias = models.CharField(max_length=100, blank=True, null=True)
-#     title = models.CharField(max_length=100,blank=True,null=True)
-#     description = models.TextField(blank=True,null=True)
-#     status = models.CharField(max_length=50, choices=STATUS, default='Active')
-#     created_at = models.DateTimeField(default=timezone.now)
-#     updated_at = models.DateTimeField(auto_now=True)
-
-#     def __str__(self):
-#         return self.news_name
-    
-#     def get_cat_name(self):
-#         return self.cat.cat_name
-#     get_cat_name.short_description = 'Cat Name'
-    
-#     class Meta:
-#         db_table = 'news'
-#         verbose_name = "News"
-#         verbose_name_plural = "News"
 
 class Avatar(models.Model):
-    
     image = models.ImageField(upload_to=upload_to_avatar, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE,blank=True, null=True)
     status = models.CharField(max_length=50, choices=STATUS, default='Active')
@@ -247,3 +211,159 @@ class Avatar(models.Model):
 
         super(Avatar, self).save(*args, **kwargs)
 
+class News_Category(models.Model):
+    news_cat_name = models.CharField(max_length=100)
+    summary = models.CharField(max_length=100,blank=True,null=True)
+    content = models.TextField(blank=True,null=True)
+    image = models.ImageField(upload_to=upload_to_news_category, blank=True, null=True)
+    alias = models.CharField(max_length=100, blank=True, null=True)
+    title = models.CharField(max_length=100,blank=True,null=True)
+    description = models.TextField(blank=True,null=True)
+    status = models.CharField(max_length=50, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)   
+    
+
+    def __str__(self):
+        return self.news_cat_name
+    
+    class Meta:
+        db_table = 'news_categories'
+        verbose_name = "News Category"
+        verbose_name_plural = "News Categories"
+
+class News(models.Model):
+    news_name = models.CharField(max_length=100)
+    summary = models.CharField(max_length=100,blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to=upload_to_news, blank=True, null=True)
+    news_cat = models.ForeignKey(News_Category, on_delete=models.CASCADE,blank=True, null=True)
+    source = models.CharField(max_length=100,blank=True, null=True)
+    alias = models.CharField(max_length=100, blank=True, null=True)
+    title = models.CharField(max_length=100,blank=True,null=True)
+    description = models.TextField(blank=True,null=True)
+    status = models.CharField(max_length=50, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.news_name
+    
+    def get_news_cat_name(self):
+        return self.news_cat.news_cat_name
+    get_news_cat_name.short_description = 'News Category Name'
+    
+    class Meta:
+        db_table = 'news'
+        verbose_name = "News"
+        verbose_name_plural = "News"
+
+class Supplier(models.Model):
+    supplier_name = models.CharField(max_length=100)
+    email = models.CharField(max_length=100,blank=True,null=True)
+    phone = models.IntegerField(blank=True,null=True)
+    address = models.TextField(blank=True, null=True)
+    owner = models.CharField(max_length=100,blank=True,null=True)
+    image = models.ImageField(upload_to=upload_to_supplier, blank=True, null=True)
+    summary = models.CharField(max_length=100,blank=True,null=True)
+    content = models.TextField(blank=True,null=True)
+    status = models.CharField(max_length=50, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)   
+    
+
+    def __str__(self):
+        return self.supplier_name
+    
+    class Meta:
+        db_table = 'suppliers'
+        verbose_name = "Supplier"
+        verbose_name_plural = "Suppliers"
+
+class Warehouse_Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,blank=True, null=True)
+    amount = models.FloatField(blank=True,null=True)
+    prod = models.ForeignKey(Product, on_delete=models.CASCADE,blank=True, null=True)
+    quantity = models.IntegerField(blank=True, null=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE,blank=True, null=True)
+    paid = models.CharField(max_length=50,choices=STATUS_PAID, default='Not paid')
+    status = models.CharField(max_length=50, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)   
+    
+    def get_username(self):
+        return self.user.username
+    get_username.short_description = 'Username'
+
+    def get_proname(self):
+        return self.prod.pro_name
+    get_proname.short_description = 'Product'
+
+    def get_suppliername(self):
+        return self.supplier.supplier_name
+    get_suppliername.short_description = 'Supplier'
+    
+    class Meta:
+        db_table = 'warehouse_payment'
+        verbose_name = "Warehouse Payment"
+        verbose_name_plural = "Warehouse Payment"
+
+class Warehouse_Product(models.Model):
+    prod = models.ForeignKey(Product, on_delete=models.CASCADE,blank=True, null=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE,blank=True, null=True)
+    note = models.TextField(blank=True,null=True)
+    paid = models.CharField(max_length=50,choices=STATUS_SELL, default='Not sell')
+    status = models.CharField(max_length=50, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)   
+    
+
+    def get_proname(self):
+        return self.prod.pro_name
+    get_proname.short_description = 'Product'
+
+    def get_suppliername(self):
+        return self.supplier.supplier_name
+    get_suppliername.short_description = 'Supplier'
+    
+    class Meta:
+        db_table = 'warehouse_products'
+        verbose_name = "Warehouse Product"
+        verbose_name_plural = "Warehouse Product"
+
+class About(models.Model):
+    title = models.CharField(max_length=100)
+    summary = models.CharField(max_length=100,blank=True,null=True)
+    content = models.TextField(max_length=100,blank=True,null=True)
+    image = models.ImageField(upload_to=upload_to_about, blank=True, null=True)
+    status = models.CharField(max_length=50, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)   
+    
+
+    def __str__(self):
+        return self.title
+    
+    class Meta:
+        db_table = 'about'
+        verbose_name = "About"
+        verbose_name_plural = "About"
+
+class Contact(models.Model):
+    company = models.CharField(max_length=100)
+    phone = models.IntegerField(blank=True,null=True)
+    email = models.CharField(max_length=100,blank=True,null=True)
+    address = models.TextField(blank=True,null=True)
+    fax = models.IntegerField(blank=True,null=True)
+    status = models.CharField(max_length=50, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)   
+    
+
+    def __str__(self):
+        return self.company
+    
+    class Meta:
+        db_table = 'contact'
+        verbose_name = "Contact"
+        verbose_name_plural = "Contact"

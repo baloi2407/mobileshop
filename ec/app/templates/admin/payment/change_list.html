@@ -4,14 +4,13 @@
 {% block content %}
 
 
-<ul>
-  <li>
-      <a href="{% url 'admin:app_payment_import' %}" class="importlink">Import</a>
-  </li>
-  <li>
-      <a href="{% url 'admin:app_payment_export' %}" class="exportlink">Export</a>
-  </li>
-</ul>
+
+<div class="btn-group">
+  <a href="{% url 'admin:app_payment_import' %}" class="btn btn-success mr-2">Import</a>
+  <a href="{% url 'admin:app_payment_export' %}" class="btn btn-success">Export</a>
+</div>
+<br>
+
 {{ block.super }}
 <h3 class="total-amount">Total amount: {{ total_amount }}$</h3>
 

@@ -1,0 +1,117 @@
+{% extends 'timezone-master/base.html' %}
+{% load static %}
+
+{% block title %}
+    News : {{val|title}}
+{% endblock title %}
+    
+{% block main %}
+<main>
+    <!-- Hero Area Start-->
+    <div class="slider-area ">
+        <div class="single-slider slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap text-center">
+                            <h2>Mobile Shop</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero Area End-->
+    
+    <section class="blog_area section-padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mb-5 mb-lg-0">
+                    <div class="blog_left_sidebar">
+                        
+                        {% for news in news %}
+                            <article class="blog_item">
+                                <div class="blog_item_img">
+                                    {% if news.image %}
+                                        <img class="card-img rounded-0" src="{{news.image.url}}" alt="">
+                                    {% endif %}
+                                    <a href="#" class="blog_item_date">
+                                        <p>{{news.created_at}}</p>
+                                    </a>
+                                </div>
+
+                                <div class="blog_details">
+                                    <a class="d-inline-block" href="{% url 'news-details' news.id %}">
+                                        <h2>{{news.news_name}}</h2>
+                                    </a>
+                                    <p>{{news.summary}}</p>
+                                    <ul class="blog-info-link">
+                                        <li><a href="#"><i class="fa fa-user"></i> Travel, Lifestyle</a></li>
+                                        <li><a href="#"><i class="fa fa-comments"></i> 03 Comments</a></li>
+                                    </ul>
+                                </div>
+                            </article>
+                            
+                        {% endfor %}
+                            
+
+                        <!-- Hiển thị phân trang -->
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if news.has_previous %}
+                                    <a class="text-danger" href="?page=1">&laquo; first</a>
+                                    <a class="text-danger" href="?page={{ news.previous_page_number }}">previous</a>
+                                {% endif %}
+
+                                <!-- Hiển thị số trang -->
+                                {% for i in news.paginator.page_range %}
+                                    {% if news.number == i %}
+                                        <span class="current">{{ i }}</span>
+                                    {% else %}
+                                        <a class="text-danger" href="?page={{ i }}">{{ i }}</a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if news.has_next %}
+                                    <a class="text-danger" href="?page={{ news.next_page_number }}">next</a>
+                                    <a class="text-danger" href="?page={{ news.paginator.num_pages }}">last &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="blog_right_sidebar">
+                        <aside class="single_sidebar_widget search_widget">
+                            <form action="/search-news" method="get" class="d-flex" role="search">
+                                <input type="search" class="form-control " placeholder="Search" name="search" aria-label="Search">
+                                <button class="text-white bg-danger btn-outline-dark" type="submit">Search</button>
+                            </form> 
+                        </aside>
+
+                        <aside class="single_sidebar_widget post_category_widget">
+                            <h4 class="widget_title">Category</h4>
+                            <ul class="list cat-list">
+                                
+                                {% for news_cat in news_category %}
+                                    <li>
+                                        <a href="{% url 'news' news_cat.id %}" class="d-flex">
+                                            <p>{{news_cat.news_cat_name}}</p>
+                                        </a>
+                                    </li>
+                                    
+                                {% endfor %}
+                                
+                            </ul>
+                        </aside>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Shop Method End-->
+</main>
+{% endblock main %}
+
+

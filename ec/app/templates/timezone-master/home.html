@@ -27,7 +27,9 @@
                         </div>
                         <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 d-none d-sm-block">
                             <div class="hero__img" data-animation="bounceIn" data-delay=".4s">
-                                <img width="400" src="{{ most_popular_product.image.url }}" alt="" class="heartbeat">
+                                {% if most_popular_product.image %}
+                                    <img width="400" src="{{ most_popular_product.image.url }}" alt="" class="heartbeat">
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -53,7 +55,10 @@
                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
                         <div class="single-new-pro mb-30 text-center">
                             <div class="product-img">
-                                <img src="{{prod.image.url}}" alt="">
+                                {% if prod.image %}
+                                    <img src="{{prod.image.url}}" alt="" width="230" height="312">
+                                
+                                {% endif %}
                             </div>
                             <div class="product-caption">
                                 <h3><a href="{% url 'product-details' prod.id %}">{{prod.pro_name}}</a></h3>
@@ -89,7 +94,9 @@
                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
                         <div class="single-popular-items mb-50 text-center">
                             <div class="popular-img">
-                                <img src="{{prod.image.url}}" alt="">
+                                {% if prod.image %}
+                                <img src="{{prod.image.url}}" alt="" width="230" height="312">
+                                {% endif %}
                                 <div class="img-cap">
                                     <form action="/add-to-cart" class="">
                                         <input type="hidden" name="prod_id" value="{{prod.id}}">

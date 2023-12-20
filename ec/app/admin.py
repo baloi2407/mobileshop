@@ -9,12 +9,19 @@ from django.conf import settings  # Import cài đặt settings của Django đ�
 from . models import (  # Import các mô hình từ module models trong cùng thư mục để sử dụng trong ứng dụng
     Product,
     Brand,
-    Customer,
+    CustomerAddress,
     Cart,
     Payment,
     OrderPlaced,
     Wishlist,
     Avatar,
+    News_Category,
+    News,
+    Supplier,
+    Warehouse_Payment,
+    Warehouse_Product,
+    Contact,
+    About,
 )
 
 from .forms import (  # Import các biểu mẫu từ module forms trong cùng thư mục để sử dụng trong ứng dụng
@@ -36,6 +43,7 @@ from django.utils.translation import gettext_lazy as _  # Import để sử dụ
 
 from import_export.admin import ImportExportModelAdmin  # Import để sử dụng ImportExportModelAdmin trong quản trị Django cho việc nhập và xuất dữ liệu
 
+
 # Đăng ký models
 
 
@@ -55,16 +63,16 @@ class BrandModelAdmin(BaseAdmin):
 class ProductModelAdmin(BaseAdmin):
     list_display = ['id','pro_name','get_brand_name','quantity','formatted_price','formatted_discount','display_image','status','updated_at']
     search_fields = ['id', 'pro_name', 'sku','brand__brand_name']
-    list_filter = ('status',
+    list_filter = ('status','brand__brand_name',
         ('created_at', admin.DateFieldListFilter), 
     )
     form = ProductForm
     
 
-@admin.register(Customer)
+@admin.register(CustomerAddress)
 class CustomerModelAdmin(BaseAdmin):
-    list_display = ['id','first_name','phone','status','updated_at']
-    search_fields = ['id','first_name','phone']
+    list_display = ['id','first_name','last_name','phone','status','updated_at']
+    search_fields = ['id','first_name','last_name','phone']
     list_filter = ('status',
         ('created_at', admin.DateFieldListFilter), 
     )
@@ -134,15 +142,13 @@ class PaymentModelAdmin(BaseAdmin):
         }
 
         return super().changelist_view(request, extra_context=extra_context)
-    
-
 
 
 @admin.register(OrderPlaced)
 class OrderPlacedModelAdmin(BaseAdmin):
     list_display = ['id','user','customers','products','quantity','status','payments','updated_at']
     search_fields = ['id','user__id','user__username','prod__pro_name']
-    list_filter = ('status',
+    list_filter = ('status','prod__pro_name',
         ('created_at', admin.DateFieldListFilter), 
     )
     date_hierarchy = 'created_at'
@@ -151,7 +157,7 @@ class OrderPlacedModelAdmin(BaseAdmin):
         link = reverse("admin:app_product_change",args=[obj.prod.pk])
         return format_html('<a href="{}">{}</a>',link, obj.prod.pro_name)
     def customers(self,obj):
-        link = reverse("admin:app_customer_change",args=[obj.customer.pk])
+        link = reverse("admin:app_customeraddress_change",args=[obj.customer.pk])
         return format_html('<a href="{}">{}</a>',link, obj.customer.first_name)
     def payments(self,obj):
         link = reverse("admin:app_payment_change",args=[obj.payment.pk])
@@ -166,24 +172,66 @@ class WishlistModelAdmin(BaseAdmin):
     def products(self,obj):
         link = reverse("admin:app_product_change",args=[obj.prod.pk])
         return format_html('<a href="{}">{}</a>',link, obj.prod.pro_name)
-# Bỏ qua
-# @admin.register(Category)
-# class CategoryModelAdmin(BaseAdmin):
-#     list_display = ['id', 'cat_name', 'summary', 'display_image', 'sku', 'status', 'updated_at']
-#     search_fields = ['id', 'cat_name', 'sku']
-#     form = CategoryForm
 
-# @admin.register(News)
-# class NewsModelAdmin(BaseAdmin):
-#     list_display = ['id','news_name','get_cat_name','display_image','status','updated_at']
-#     search_fields = ['id','news_name','cat__cat_name']
-#     form = NewsForm
 
 @admin.register(Avatar)
 class AvatarModelAdmin(BaseAdmin):
     list_display = ['id','display_image','user_id','status','updated_at']
     form = AvatarAdminForm
 
-    
-#admin.site.unregister(Group)
+@admin.register(News_Category)
+class NewsCategoryModelAdmin(BaseAdmin):
+    list_display = ['id', 'news_cat_name', 'summary', 'content', 'display_image', 'status', 'updated_at'] 
+    search_fields = ['id', 'news_cat_name','created_at']
+    list_filter = ('status',
+        ('created_at', admin.DateFieldListFilter), 
+    )
 
+@admin.register(News)
+class NewsModelAdmin(BaseAdmin):
+    list_display = ['id', 'news_name','get_news_cat_name', 'summary', 'content', 'display_image', 'status', 'updated_at'] 
+    search_fields = ['id', 'news_name','news_cat__news_cat_name','created_at']
+    list_filter = ('status','news_cat__news_cat_name',
+        ('created_at', admin.DateFieldListFilter), 
+    )
+
+@admin.register(Supplier)
+class SupplierModelAdmin(BaseAdmin):
+    list_display = ['id', 'supplier_name','email', 'phone', 'status', 'updated_at'] 
+    search_fields = ['id', 'supplier_name','created_at']
+    list_filter = ('status','supplier_name',
+        ('created_at', admin.DateFieldListFilter), 
+    )
+
+@admin.register(Warehouse_Payment)
+class Warehouse_PaymentModelAdmin(BaseAdmin):
+    list_display = ['id', 'get_username','amount', 'get_proname','quantity','get_suppliername', 'status', 'updated_at'] 
+    search_fields = ['id', 'supplier__supplier_name','prod__pro_name','created_at']
+    list_filter = ('status','supplier__supplier_name','prod__pro_name',
+        ('created_at', admin.DateFieldListFilter), 
+    )
+
+@admin.register(Warehouse_Product)
+class Warehouse_ProductModelAdmin(BaseAdmin):
+    list_display = ['id','products','get_suppliername', 'status', 'updated_at'] 
+    search_fields = ['id', 'supplier__supplier_name','prod__pro_name','created_at']
+    list_filter = ('status','supplier__supplier_name','prod__pro_name',
+        ('created_at', admin.DateFieldListFilter), 
+    )
+    def products(self,obj):
+        link = reverse("admin:app_product_change",args=[obj.prod.pk])
+        return format_html('<a href="{}">{}</a>',link, obj.prod.pro_name)
+
+@admin.register(Contact)
+class ContactModelAdmin(BaseAdmin):
+    list_display = ['id', 'company','phone', 'email','address','fax', 'status', 'updated_at'] 
+    search_fields = ['id', 'company','phone', 'email','address','fax','created_at']
+   
+
+@admin.register(About)
+class AboutModelAdmin(BaseAdmin):
+    list_display = ['id', 'title','summary', 'content','display_image', 'status', 'updated_at'] 
+    search_fields = ['id', 'title','created_at']
+
+
+#admin.site.unregister(Group)

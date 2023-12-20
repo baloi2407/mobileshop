@@ -15,7 +15,7 @@ from django.contrib.auth.models import User  # Import mô hình User từ Django
 from .models import (  # Import các mô hình từ module models trong cùng thư mục để sử dụng trong ứng dụng
     Product,
     Brand,
-    Customer,
+    CustomerAddress,
     Cart,
     OrderPlaced,
     Payment,
@@ -55,7 +55,7 @@ class BaseForm(forms.ModelForm):
         if re.search(r'[^\x00-\x7F]+', value):
             raise ValidationError(f"{field_name} cannot contain Vietnamese accents.")
 
-        if len(value) < 3:
+        if len(value) < 2:
             raise ValidationError(f"{field_name} is too short. {field_name} needs at least 3 characters.")
         
     def clean_field(self, field_name):
@@ -93,10 +93,11 @@ class BaseForm(forms.ModelForm):
         if not value_str.isdigit():
             raise forms.ValidationError(f"{field_name} must only contain digits.")
 
-        if not (10 <= len(value_str) <= 11):
-            raise forms.ValidationError(f"{field_name} must have 10 or 11 digits.")
+        if len(value_str) != 10:
+            raise forms.ValidationError(f"{field_name} must have exactly 10 digits.")
 
         return value
+
     @staticmethod
     def validate_date_of_birth(value, field_name):
         if value:
@@ -136,38 +137,22 @@ class ProductForm(BaseForm):
     def clean_price(self):
         return self.validate_positive_value(self.cleaned_data.get('price'), "Price")
 
-    
+    def clean_quantity(self):
+        return self.validate_positive_value(self.cleaned_data.get('quantity'), "Quantity")
 
     # Sử dụng hàm validate_discount cho trường discount
     def clean_discount(self):
         return self.validate_discount(self.cleaned_data.get('discount'), "Discount")
+    
     def clean(self):
         cleaned_data = super().clean()
         self.clean_selected_field('brand')
         return cleaned_data
-# Bỏ qua
-# class CategoryForm(BaseForm):
-#     class Meta:
-#         model = Category
-#         fields = '__all__'  # Sử dụng tất cả các trường có trong model
-#     def clean_cat_name(self):
-#         return self.clean_field('cat_name')
-    
-# class NewsForm(BaseForm):
-#     class Meta:
-#         model = News
-#         fields = '__all__'  # Sử dụng tất cả các trường có trong model
-#     def clean_news_name(self):
-#         return self.clean_field('news_name')
-    
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         self.clean_selected_field('cat')
-#         return cleaned_data
+
     
 class CustomerForm(BaseForm):
     class Meta:
-        model = Customer
+        model = CustomerAddress
         fields = '__all__'  # Sử dụng tất cả các trường có trong model
     def clean_first_name(self):
         return self.clean_field('first_name')
@@ -263,29 +248,30 @@ class MySetPasswordForm(SetPasswordForm):
     new_password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput(attrs={'autocomplete':'current-password','class':'form-control'}))
 
 class CustomerProfileForm(BaseForm):
+    def clean_first_name(self):
+        return self.clean_field('first_name')
+
+    def clean_last_name(self):
+        return self.clean_field('last_name')
+    
+    def clean_date_of_birth(self):
+        value = self.cleaned_data.get('date_of_birth')
+        field_name = 'date_of_birth'
+        return self.validate_date_of_birth(value, field_name)
+    
     class Meta:
-        model = Customer
+        model = CustomerAddress
         fields = ['first_name','last_name','address','date_of_birth','phone']
         widgets={
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'id': 'inputfirst_name', 'placeholder': 'first_name', 'type': 'text'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'id': 'inputlast_name', 'placeholder': 'last_name', 'type': 'text'}),
             'address': forms.Textarea(attrs={'class': 'form-control', 'id': 'inputaddress', 'placeholder': 'address', 'type': 'address'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control','type':'date'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'id': 'inputphone', 'placeholder': 'Phone','type':'phone'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'id': 'inputphone', 'placeholder': 'Phone','type':'text'}),
 
         }
 
-    def clean_first_name(self):
-        return self.clean_field('first_name')
     
-    def clean_last_name(self):
-        return self.clean_field('last_name')
-    
-    def clean_phone(self):
-        return self.validate_phone(self.cleaned_data.get('phone'), "Phone")
-    
-    def clean_date_of_birth(self):
-        return self.validate_date_of_birth(self.cleaned_data.get('date_of_birth'), "Date of birth")
 
 class AvatarProfileForm(forms.ModelForm):
     class Meta:

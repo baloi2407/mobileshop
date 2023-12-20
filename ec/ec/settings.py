@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -66,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processors.brands',
+                'app.context_processors.news_category',
                 'app.context_processors.cart_items',
                 'app.context_processors.wish_items',
                 'app.context_processors.avatar',
@@ -144,3 +146,6 @@ RAZOR_KEY_ID = 'rzp_test_hUClvlNvU5ywCd'
 RAZOR_KEY_SECRET = '3gkeSiyzpQlzWOpKq9nFLb62'
 
 LIST_PER_PAGE = 10
+
+# Trong settings.py
+LOGIN_REDIRECT_URL = '/home'

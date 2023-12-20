@@ -31,6 +31,7 @@ from . forms import (  # Import các biểu mẫu từ module forms trong cùng 
 
 urlpatterns = [
     path('', views.home),
+    path("home/", views.home,name="home"),
     path("about",views.about,name="about"),
     path("contact",views.contact,name="contact"),
     path("brand/<int:val>/",views.BrandView.as_view(),name="brand"),
@@ -39,6 +40,7 @@ urlpatterns = [
 
     path("profile/",views.ProfileView.as_view(),name="profile"),
     path("address/",views.address,name="address"),
+    path("createAddress/",views.createAddressView.as_view(),name="createAddress"),
     path("updateAddress/<int:pk>",views.updateAddress.as_view(),name="updateAddress"),
     path("deleteAddress/<int:pk>",views.deleteAddress,name="deleteAddress"),
     path("avatar/",views.avatar,name="avatar"),
@@ -65,7 +67,13 @@ urlpatterns = [
     path('search/',views.search,name='search'),
     path('advanced_search/', views.advanced_search, name='advanced_search'),
 
+    path("news/<int:val>/",views.News_CategoryView.as_view(),name="news"),
+    path("news/",views.News_CategoryView.as_view(),name="news-default"),
+    path("news-details/<int:pk>",views.NewsDetail.as_view(),name="news-details"),
+    path('search-news/',views.search_news,name='search-news'),
 
+    path('user-email/',views.UserEmail,name='user-email'),
+    path('update-email/',views.update_email,name='update-email'),
 
     # Login authentication
     path("registration/",views.CustomerRegistrationView.as_view(),name="registration"),

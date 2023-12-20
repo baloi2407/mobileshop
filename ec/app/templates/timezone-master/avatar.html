@@ -31,12 +31,18 @@
                             <div class="card m-2">
                                 <div class="card-body">
                                     {% if ava.image %}
-                                        <div class="avatar-container">
-                                            <img src="{{ ava.image.url }}" alt="Avatar" class="img-fluid">
-                                        </div>
+                                        {% if ava.image.url %}
+                                            <div class="avatar-container">
+                                                <img src="{{ ava.image.url }}" alt="Avatar" class="img-fluid">
+                                            </div>
+                                        {% else %}
+                                            <p>No avatar available</p>
+                                        {% endif %}
                                     {% else %}
                                         <p>No avatar available</p>
                                     {% endif %}
+
+
                                     <a href="{% url 'updateAvatar' pk=ava.id %}" class="btn" type="button">Update</a>
                                     <a href="#" class="btn btn-danger delete-avatar" data-avatar-id="{{ ava.id }}">Delete</a>
                                 </div>

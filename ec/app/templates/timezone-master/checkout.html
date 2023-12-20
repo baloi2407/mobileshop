@@ -48,7 +48,7 @@
                 </div>
               </div>
               <div class="form-check mt-2 mb-5">
-                <input type="hidden" class="form-check-input" name="custid" id="custadd{{forloop.counter}}" value="{{add.id}}">
+                <input type="hidden" class="form-check-input" name="custid" id="" value="{{add.id}}">
               </div>
             <div class="form-check mb-3">
               <label for="amount" class="form-label">Total Amount</label>
@@ -69,10 +69,6 @@
       </div>
     </div>
   </div>
-{% endblock main %}
-
-
-{% block payment-gateway %}
   <script>
     var options = {
       "key": "rzp_test_hUClvlNvU5ywCd", // Enter the KEY ID generated from the Dashboard
@@ -104,6 +100,7 @@
       e.preventDefault();
     }
   </script>
-{% endblock payment-gateway %}
+{% endblock main %}
+
   
   
