@@ -86,15 +86,8 @@ class BaseForm(forms.ModelForm):
         return value
     @staticmethod
     def validate_phone(value, field_name):
-        if value is None:
-            return value  # Cho phép giá trị rỗng
+        
 
-        value_str = str(value)
-        if not value_str.isdigit():
-            raise forms.ValidationError(f"{field_name} must only contain digits.")
-
-        if len(value_str) != 10:
-            raise forms.ValidationError(f"{field_name} must have exactly 10 digits.")
 
         return value
 

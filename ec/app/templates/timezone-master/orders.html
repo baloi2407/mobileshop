@@ -43,7 +43,7 @@
                                     <a class="text-danger" href="{% url 'order_details' op.id %}">Details</a>
 
                                     <div class="order-status ml-auto">
-                                        <p>Order status: </p>
+                                        <p>Order status: {{op.status}}</p>
                                         
                                         {% if op.status == 'Pending' %}
                                             <div class="progress">

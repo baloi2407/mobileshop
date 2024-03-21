@@ -84,7 +84,6 @@ class ProductDetail(View):
     def get(self,request,pk):
         product = Product.objects.get(pk=pk)
         brand_name = product.brand.brand_name
-        wishlist = Wishlist.objects.filter(Q(prod=product) & Q(user=request.user))
         return render(request,"timezone-master/product_details.html",locals())
     
 #Xử lý view trang đăng ký tài khoản
@@ -426,29 +425,35 @@ class checkout(View):
     
 
 #Xử lý view thanh toán hoàn thành
+@login_required
 def payment_done(request):
     order_id = request.GET.get('order_id')
     payment_id = request.GET.get('payment_id')
     cust_id = request.GET.get('cust_id')
-    user = request.user
     
-    customer = CustomerAddress.objects.get(id=cust_id)
-    payment = Payment.objects.get(razorpay_order_id=order_id)
-    payment.paid = True
-    payment.razorpay_payment_id = payment_id
-    payment.save()
-    
-    cart = Cart.objects.filter(user=user)
-    for c in cart:
-        # Sử dụng trực tiếp đối tượng sản phẩm từ giỏ hàng
-        prod = c.prod
-        prod.quantity -= c.quantity
-        prod.save()
+    # Kiểm tra xem người dùng đã đăng nhập hay chưa
+    if request.user.is_authenticated:
+        user = request.user
+        customer = get_object_or_404(CustomerAddress, id=cust_id)
+        payment = get_object_or_404(Payment, razorpay_order_id=order_id)
         
-        OrderPlaced(user=user, customer=customer, prod=prod, quantity=c.quantity,value=c.value, payment=payment).save()
-        c.delete()
+        payment.paid = True
+        payment.razorpay_payment_id = payment_id
+        payment.save()
         
-    return redirect("orders")
+        cart = Cart.objects.filter(user=user)
+        for c in cart:
+            prod = c.prod
+            prod.quantity -= c.quantity
+            prod.save()
+            
+            OrderPlaced(user=user, customer=customer, prod=prod, quantity=c.quantity, value=c.value, payment=payment).save()
+            c.delete()
+        
+        return redirect("orders")
+    else:
+        # Xử lý trường hợp người dùng không đăng nhập
+        return HttpResponse("Unauthorized", status=401)
 
 
 #Xử lý view trang đơn hàng
